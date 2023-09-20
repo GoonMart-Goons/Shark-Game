@@ -4,5 +4,6 @@ run these in terminal
     npm install --save-dev vite
 
 HOW TO RUN
+cd into src first
     npx vite
     Ctrl + click given link

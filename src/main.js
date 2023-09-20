@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-// import 'keyboardevent-key-polyfill'
+import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -12,7 +12,7 @@ document.body.appendChild(renderer.domElement)
 
 //Components
 const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1)
-const directionalLight = new THREE.DirectionalLight(0x000055, 10)
+const directionalLight = new THREE.DirectionalLight(0xFFFFFF, 5)
 let player
 let ground
 
@@ -82,11 +82,12 @@ const handleKeyUp = (e) => {
     }
 }
 
+//Keeps cam following the player with some offset
 function camFollowPlayer(){
     const camOffset = new THREE.Vector3(0, 1, 5)
     let newCamPos = playerPos.clone().add(camOffset)
 
-    camera.position.copy(newCamPos)
+    camera.position.lerp(newCamPos, 0.2)
 }
 
 //Makes a cube

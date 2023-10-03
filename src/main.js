@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
+import * as dat from 'dat.gui';
+
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -20,6 +22,17 @@ let ground
 const playerSpeed = 0.0325
 const playerPos = new THREE.Vector3(0, 0, 0)
 const playerDir = new THREE.Vector3()
+
+//Plane constants
+const planeX = 500;
+const planeY = 500;
+const loader = new THREE.TextureLoader();
+const height = loader.load('/map.jpg');
+const texture = loader.load('/mountain.jpg');
+const alpha = loader.load('/map.jpg');
+
+//Debug
+const gui = new dat.GUI();
 // ================================================================================================
 
 // F U N C T I O N S ==============================================================================
@@ -101,12 +114,46 @@ function addCube(){
 
 //Make a plane [ground]
 function addPlane(){
-    let geometry = new THREE.PlaneGeometry(15, 15)
+    /*let geometry = new THREE.PlaneGeometry(planeX, planeY)
     let material = new THREE.MeshPhongMaterial({color: 0x5500ff, side: THREE.DoubleSide})
     let plane = new THREE.Mesh(geometry, material);
     
-    return plane
+    return plane*/
+
+    const groundGeo = new THREE.PlaneGeometry(planeX, planeY, 64, 64);
+    const material = new THREE.MeshStandardMaterial({
+        color: 'brown',
+        map: texture,
+        displacementMap: height,
+        displacementScale: 30,
+        alphaMap: alpha,
+        transparent: true,
+        opacity: 3
+        //depthTest: false
+    });
+
+    const plane = new THREE.Mesh(groundGeo, material);
+
+    return plane;
 }
+
+function planeGrid() {
+    const group = new THREE.Group(); // Create a group to hold the planes
+
+    for (let i = 0; i < 3; i++) {
+        for (let j = 0; j < 3; j++) {
+            const ground = addPlane();
+            ground.position.x = i * planeX;
+            ground.position.y = j * planeY;
+            //ground.position.y = -0.2 * j * planeY;
+            //ground.rotation.set(162, 0, 0);
+            group.add(ground); // Add the individual plane to the group
+        }
+    }
+
+    return group; // Return the group containing all the planes
+}
+
 
 // ================================================================================================
 
@@ -119,16 +166,29 @@ directionalLight.position.set(0, 10, 0)
 scene.add(directionalLight)
 directionalLight.castShadow = true
 
-ground = addPlane()
-ground.position.y = -2
-ground.rotation.set(90, 0, 0)
-scene.add(ground)
+const oceanFloor = addPlane() //planeGrid();
+//oceanFloor.position.y = -2
+//oceanFloor.position.x = -planeX/2
+oceanFloor.position.y = -150 //planeY
+oceanFloor.rotation.set(162, 0, 0)
+//oceanFloor.position.y = planeY
+scene.add(oceanFloor); // Add the entire grid of planes to your Three.js scene
+
+
+
 //Test cube as player for now
 player = addCube()
 scene.add(player)
 
 //Set camera pos
 camera.position.set(0, 1, 5)
+
+//Debug
+gui.add(oceanFloor.rotation, 'x').min(0).max(180);
+gui.add(oceanFloor.rotation, 'y').min(0).max(180);
+gui.add(oceanFloor.rotation, 'z').min(0).max(180);
+
+
 
 //Call function
 animate()

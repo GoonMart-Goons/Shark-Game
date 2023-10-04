@@ -1,5 +1,6 @@
 import * as THREE from 'three';
 import { FlyControls } from '../modules/FlyControls';
+import { FirstPersonControls } from '../modules/FirstPersonControls';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -10,6 +11,9 @@ renderer.setSize(window.innerWidth, window.innerHeight)
 renderer.shadowMap.enabled = true
 document.body.appendChild(renderer.domElement)
 let controls //For camera movement
+
+let mouseMoved = false //For camera rotations
+let keydown = false //For movement
 
 //Components
 const ambientLight = new THREE.AmbientLight(0xFFFFFF, 1)
@@ -27,8 +31,7 @@ let ground //Placeholder for now
 //Initialize scene
 function init(){
     //Camera controller
-    controls = new FlyControls(camera, renderer.domElement)
-    controls.dragToLook = true
+    controls = new FirstPersonControls(camera, renderer.domElement)
     controls.movementSpeed = 0.25
 
     //Scene elements
@@ -47,25 +50,32 @@ function init(){
     //Test cube as player for now
     player = addCube()
     scene.add(player)
-
-    //Enable key event listening
-    addKeyListener()
+    // camera.add(player)
+    player.position.set(0, 0, -10)
 }
+
 //Animation functions
 function animate(){
     requestAnimationFrame(animate)
 
-    controls.update(0.5)
-    playerFollowCam()
+    if(mouseMoved){
+        controls.lookSpeed = 0.005
+        controls.update(0.5)
+        mouseMoved = false
+    }
+    controls.lookSpeed = 0
 
-    //Player movement
-    // playerPos.addScaledVector(playerDir, playerSpeed)
-    // player.position.copy(playerPos)
-    // camFollowPlayer()
-    
-    // controls.update()
+
+    if(keydown)
+        controls.update(0.5)
+
     renderer.render(scene, camera)
 }
+
+//Only change camera position when mouse is moved
+document.addEventListener('mousemove', () => {
+    mouseMoved = true
+})
 
 //Allows code to listen for keyboard input
 function addKeyListener(){
@@ -78,25 +88,15 @@ function addKeyListener(){
 //Handles player movement on key events
 const handleKeyDown = (e) => {
     switch(e.key){
-        //Forward
         case 'w':
         case 'ArrowUp':
-            playerDir.z = -1
-            break
-        //Backward
         case 's':
         case 'ArrowDown':
-            playerDir.z = 1
-            break
-        //Left
         case 'a':
         case 'ArrowLeft':
-            playerDir.x = -1
-            break
-        //Right
         case 'd':
         case 'ArrowRight':
-            playerDir.x = 1
+            keydown = true
             break
     }
 }
@@ -106,33 +106,13 @@ const handleKeyUp = (e) => {
         case 's':
         case 'ArrowUp':
         case 'ArrowDown':
-            playerDir.z = 0
-            break
         case 'a':
         case 'd':
         case 'ArrowLeft':
         case 'ArrowRight':
-            playerDir.x = 0
+            keydown = false
             break
     }
-}
-
-//Keeps cam following the player with some offset
-function camFollowPlayer(){
-    const camOffset = new THREE.Vector3(0, 1, 5)
-    let newCamPos = playerPos.clone().add(camOffset)
-
-    camera.position.lerp(newCamPos, 0.2)
-}
-
-function playerFollowCam(){
-    const playerOffset = new THREE.Vector3(0, -1, -2)
-    let newPlayerPos = camera.position.clone().add(playerOffset)
-    let newPlayerRot = camera.rotation.clone()
-
-    // player.rotation.set(newPlayerRot, 0.2)
-    player.position.lerp(newPlayerPos, 1)
-    player.rotation.set(camera.rotation.clone())
 }
 
 //Makes a cube
@@ -160,5 +140,6 @@ function addPlane(){
 //Call functions
 init()
 animate()
+addKeyListener()
 
 // ================================================================================================

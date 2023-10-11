@@ -1,7 +1,6 @@
 import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-
-import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { PointerLockControls } from '../modules/PointerLockControls';
+import { Vector3 } from 'three';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -28,38 +27,65 @@ function init(){
     scene.background = new THREE.Color(0xaaccff)
     scene.fog = new THREE.Fog(0x1010ff, 0, 750)
 
-    renderer = new THREE.WebGLRenderer()
-    // renderer.setPixelRatio(window.devicePixelRatio)
-    renderer.setSize(window.innerWidth / window.innerHeight)
-    document.body.appendChild(renderer.domElement)
-
     const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 2.5)
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
 
-    controls = new PointerLockControls(camera, renderer.domElement)
-    // controls.lock()
-    // Add an event listener for when the pointer is locked
-    controls.addEventListener('lock', () => {
-        console.log('Pointer is now locked.')
-    })
-
-    // Add an event listener for when the pointer is unlocked
-    controls.addEventListener('unlock', () => {
-        console.log('Pointer is now unlocked.')
-    })
-
-    // Lock the pointer when the user clicks on the renderer
-    renderer.domElement.addEventListener('click', () => {
-        controls.lock()
-    })
+    controls = new PointerLockControls(camera, document.body)
+    controls.unlock()
 
     scene.add(controls.getObject())
+
+    //Key listeners
+    const onKeyDown = function (e) {
+        switch (e.code) {
+            case 'ArrowUp':
+            case 'KeyW':
+                movementArr[0] = true
+                break
+            case 'ArrowDown':
+            case 'KeyS':
+                movementArr[1] = true
+                break
+            case 'ArrowLeft':
+            case 'KeyA':
+                movementArr[2] = true
+                break
+            case 'ArrowRight':
+            case 'KeyD':
+                movementArr[3] = true
+                break
+        }
+    }
+
+    const onKeyUp = function (e) {
+        switch (e.code) {
+            case 'ArrowUp':
+            case 'KeyW':
+                movementArr[0] = false
+                break
+            case 'ArrowDown':
+            case 'KeyS':
+                movementArr[1] = false
+                break
+            case 'ArrowLeft':
+            case 'KeyA':
+                movementArr[2] = false
+                break
+            case 'ArrowRight':
+            case 'KeyD':
+                movementArr[3] = false
+                break
+        }
+    }
+
+    document.addEventListener('keydown', onKeyDown)
+    document.addEventListener('keyup', onKeyUp)
 
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
 
     //Floor for testing
-    let floorGeom = new THREE.PlaneGeometry(1000, 1000, 100, 100)
+    let floorGeom = new THREE.PlaneGeometry(2000, 2000, 100, 100)
     floorGeom.rotateX( -Math.PI / 2)
     let pos = floorGeom.attributes.position
 
@@ -81,28 +107,31 @@ function init(){
         floorCols.push( col.r, col.g, col.b)
     }
     floorGeom.setAttribute('color', new THREE.Float32BufferAttribute(floorCols, 3))
+
     let floorMat = new THREE.MeshBasicMaterial({vertexColors: true})
     const floor = new THREE.Mesh(floorGeom, floorMat)
     scene.add(floor)
 
-    window.addEventListener('resize', onWindowResize)
+    renderer = new THREE.WebGLRenderer()
+    renderer.setPixelRatio(window.devicePixelRatio)
+    renderer.setSize(window.innerWidth / window.innerHeight)
+    document.body.appendChild(renderer.domElement)
 
-    //HUD elements
-    initHUD()
+    window.addEventListener('resize', onWindowResize)
 }
 
 //Animation functions
 function animate() {
-    requestAnimationFrame(animate)
-
-    //HUD element updates
-    setBarNumber()
-    drawTime()
+    requestAnimationFrame( animate )
     const time = performance.now()
 
     if (controls.isLocked === true) {
         raycaster.ray.origin.copy(controls.getObject().position)
         raycaster.ray.origin.y -= 10
+
+        const intersections = raycaster.intersectObjects(objects, false)
+
+        const onObject = intersections.length > 0
 
         const delta = (time - prevTime) / 1000
 
@@ -117,8 +146,8 @@ function animate() {
         if (movementArr[0] || movementArr[1]) velocity.z -= direction.z * 400.0 * delta
         if (movementArr[2] || movementArr[3]) velocity.x -= direction.x * 400.0 * delta
 
-        controls.moveRight( - velocity.x * delta )
-        controls.moveForward( - velocity.z * delta )
+        controls.movementArr[3]( - velocity.x * delta )
+        controls.movementArr[0]( - velocity.z * delta )
 
         controls.getObject().position.y += ( velocity.y * delta ) // new behavior
 

@@ -3,6 +3,7 @@ import { FlyControls } from '../modules/FlyControls';
 import { FirstPersonControls } from '../modules/FirstPersonControls';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
+import * as dat from 'dat.gui';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -26,7 +27,7 @@ let ground //Placeholder for now
 //For movement
 const playerSpeed = 0.0325
 const playerPos = new THREE.Vector3(0, 0, 0)
-const playerDir = new THREE.Vector3()
+const playerDir = new THREE.Vector3(0, 0, 0)
 
 //Plane constants
 const planeX = 1000;
@@ -42,6 +43,11 @@ const alpha = loader.load('/Noisemaps.png');
 const timeStep = 1 / 200;
 const world = new CANNON.World();
 world.gravity.set(0, -9.81, 0);
+
+//Raycasting
+const raycaster = new THREE.Raycaster();
+const raycastDirection = new THREE.Vector3(0, -1, 0); // Downward direction
+
 
 const cannonDebugger = new CannonDebugger(scene, world)
 //cannonDebugger.enable();
@@ -93,9 +99,18 @@ const handleKeyUp = (e) => {
     }
 }
 
+//Keeps cam following the player with some offset
+function camFollowPlayer(){
+    const camOffset = new THREE.Vector3(0, 1, 5)
+    let newCamPos = playerPos.clone().add(camOffset)
+
+    camera.position.lerp(newCamPos, 0.2)
+}
+
+
 //Makes a cube
 function addCube(){
-    let geometry = new THREE.BoxGeometry(1, 1, 1)
+    let geometry = new THREE.BoxGeometry(10, 10, 10)
     let material = new THREE.MeshPhongMaterial({color: 0x55aaff})
     let cube = new THREE.Mesh(geometry, material)
 
@@ -104,11 +119,6 @@ function addCube(){
 
 //Make a plane [ground]
 function addPlane(){
-    /*let geometry = new THREE.PlaneGeometry(15, 15)
-    let material = new THREE.MeshPhongMaterial({color: 0x5500ff, side: THREE.DoubleSide})
-    let plane = new THREE.Mesh(geometry, material);
-    
-    return plane*/
 
     const groundGeo = new THREE.PlaneGeometry(planeX, planeY, 64, 64);
     const material = new THREE.MeshStandardMaterial({
@@ -127,75 +137,6 @@ function addPlane(){
     return plane;
 }
 
-function planeGrid() {
-    const group = new THREE.Group(); // Create a group to hold the planes
-
-    for (let i = 0; i < 3; i++) {
-        for (let j = 0; j < 3; j++) {
-            const ground = addPlane();
-            ground.position.x = i * planeX;
-            ground.position.y = j * planeY;
-            //ground.position.y = -0.2 * j * planeY;
-            //ground.rotation.set(162, 0, 0);
-            group.add(ground); // Add the individual plane to the group
-        }
-    }
-
-    return group; // Return the group containing all the planes
-}
-
-// Extract the height data from the pixel data
-/*function extractHeightData(context, width, height) {
-  const terrainData = [];
-  const data = context.getImageData(0, 0, width, height).data;
-
-  const yourHeightRange = 1.0;
-
-  for (let i = 0; i < width; i++) {
-    for (let j = 0; j < height; j++) {
-      // Since heightmap textures typically use grayscale, we can use a single channel (red)
-      const index = (i + j * width) * 4;
-      const red = data[index];
-      // Map the grayscale value (0-255) to your desired height range
-      const heightValue = (red / 255) * yourHeightRange; // Replace with your actual height range
-      terrainData.push(heightValue);
-
-      // Debugging: Log the extracted height value
-      console.log(`Pixel at (${i}, ${j}): Red=${red}, Height=${heightValue}`);
-
-    }
-  }
-
-  return terrainData;
-}
-
-// Define a function to handle heightmap loading
-function handleHeightmapLoad() {
-    // Access the image data (pixels)
-    const imageData = height.image;
-    const canvas = document.createElement('canvas');
-    const context = canvas.getContext('2d');
-    canvas.width = imageData.width;
-    canvas.height = imageData.height;
-    context.drawImage(imageData, 0, 0, canvas.width, canvas.height);
-  
-    // Extract the height data from the pixel data
-    terrainData = extractHeightData(context, canvas.width, canvas.height);
-  
-    // Now you can create the Cannon.js heightfield with terrainData
-    const terrainShape = new CANNON.Heightfield(terrainData, {
-      elementSize: 1, // Adjust this based on your terrain scale
-    });
-  
-    // Create the Cannon.js body for the terrain and add it to the world
-    const terrainBody = new CANNON.Body({ mass: 0 }); // Mass 0 because it's static
-    terrainBody.addShape(terrainShape);
-    terrainBody.position.copy(oceanFloor.position); // Match the position
-    terrainBody.quaternion.copy(oceanFloor.quaternion); // Match the rotation
-    world.addBody(terrainBody);
-  }*/
-  
-
 
 // ================================================================================================
 
@@ -203,21 +144,15 @@ function handleHeightmapLoad() {
 
 //Physics
 // Physics materials
-const groundMaterial = new CANNON.Material();
+
 const cubeMaterial = new CANNON.Material();
 
-// Ground
-/*const groundShape = new CANNON.Plane();
-const groundBody = new CANNON.Body({ mass: 0, material: groundMaterial });
-groundBody.addShape(groundShape);
-groundBody.quaternion.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2); // Rotate the ground
-world.addBody(groundBody);*/
 
 // Cube
-const cubeShape = new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)); // Adjust the size as needed
+const cubeShape = new CANNON.Box(new CANNON.Vec3(5, 5, 5)); // Adjust the size as needed
 const cubeBody = new CANNON.Body({ mass: 1, material: cubeMaterial });
 cubeBody.addShape(cubeShape);
-cubeBody.position.set(0, 5, -10); // Set the initial position of the cube
+cubeBody.position.set(20, 5, -170); // Set the initial position of the cube
 world.addBody(cubeBody);
 
 
@@ -237,18 +172,10 @@ oceanFloor.rotation.set(162, 0, 0)
 //oceanFloor.position.y = planeY
 scene.add(oceanFloor); // Add the entire grid of planes to your Three.js scene
 
-// Check if the heightmap image is already loaded
-/*if (height.image) {
-    // If it's already loaded, call the handler immediately
-    handleHeightmapLoad();
-  } else {
-    // If it's not loaded yet, set the onload event handler
-    height.image.onload = handleHeightmapLoad;
-  }*/
-
-
 //Test cube as player for now
 player = addCube()
+player.position.set(0, 0, 0); // Initialize the position
+player.rotation.set(0, 0, 0);
 scene.add(player)
 
 //Set camera pos
@@ -273,7 +200,52 @@ function animate() {
 
     // Update Three.js objects based on Cannon.js body positions
     player.position.copy(cubeBody.position);
-    player.rotation.copy(cubeBody.quaternion);
+    //player.rotation.copy(cubeBody.quaternion.setFromEuler(new CANNON.Vec3(0, 0, 0), 'XYZ'));
+    // Convert the Cannon.js quaternion to Three.js quaternion
+    const cannonQuaternion = cubeBody.quaternion.clone(); // Clone the Cannon.js quaternion
+    const threeQuaternion = new THREE.Quaternion(
+    cannonQuaternion.x,
+    cannonQuaternion.y,
+    cannonQuaternion.z,
+    cannonQuaternion.w
+    );
+
+    // Set the Three.js player's rotation
+    player.rotation.setFromQuaternion(threeQuaternion);
+    
+    // Set the ray's origin to the player's current position
+    raycaster.ray.origin.copy(player.position);
+
+    // Set the ray's direction
+    raycaster.ray.direction.copy(raycastDirection);
+
+    // Set the maximum distance the ray can travel (adjust this according to your scene's scale)
+    const maxRayDistance = 20; // Adjust as needed
+    raycaster.far = maxRayDistance;
+
+    // Perform the raycasting
+    const intersections = raycaster.intersectObject(oceanFloor);
+
+    // Check if there are any intersections
+    if (intersections.length > 0) {
+        // There is a collision with the terrain (oceanFloor)
+        // You can handle the collision here, e.g., by stopping the player's downward movement
+        //playerDir.y = 0; // Set the player's vertical movement to 0 to prevent falling through the terrain
+        cubeBody.velocity.y = 0;
+        //cubeBody.position.copy(player.position);
+        //world.gravity.set(0, 0, 0);
+        //console.log("intersecting")
+        //cubeBody.mass = 0;
+    } else {
+        // No collision, you can continue updating the player's position
+        //playerDir.y = -0.5; // Apply gravity to the player (if needed)
+        cubeBody.velocity.y = -9.81;
+        //console.log("not")
+        //world.gravity.set(0, -9.81, 0);
+        //cubeBody.mass = 1;
+    }
+
+
     cannonDebugger.update();
 
     renderer.render(scene, camera);

@@ -1,5 +1,6 @@
 import * as THREE from 'three';
-import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+// import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import { PointerLockControls } from '../modules/PointerLockControls';
 
 import { setBarNumber, drawTime, initHUD } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
@@ -75,9 +76,7 @@ function init(){
 
 //Allows code to listen for keyboard input
 function addKeyListener(){
-    //Keydown = active input 
     window.addEventListener('keydown', onKeyDown)
-    //When key is released, input !active
     window.addEventListener('keyup', onKeyUp)
 }
 
@@ -138,8 +137,6 @@ function animate() {
     const time = performance.now()
 
     if (controls.isLocked === true) {
-        raycaster.ray.origin.copy(controls.getObject().position)
-        raycaster.ray.origin.y -= 10
 
         const delta = (time - prevTime) / 1000
 
@@ -158,7 +155,6 @@ function animate() {
 
         controls.moveRight(-velocity.x * delta)
         controls.moveForward(-velocity.z * delta)
-
     }
 
     prevTime = time

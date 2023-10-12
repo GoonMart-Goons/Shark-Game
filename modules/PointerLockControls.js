@@ -86,6 +86,9 @@ class PointerLockControls extends EventDispatcher {
 
 		_vector.crossVectors( camera.up, _vector );
 
+		//Modified code to allow movement along y-axis too
+		_vector.y += Math.sin(_euler.x)
+
 		camera.position.addScaledVector( _vector, distance );
 
 	}

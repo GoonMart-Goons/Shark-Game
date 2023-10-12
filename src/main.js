@@ -2,10 +2,11 @@ import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 
 import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { addPlane, planeGrid } from './components/terrain';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls
+let camera, scene, renderer, controls, oceanFloor
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 let raycaster
 
@@ -37,6 +38,7 @@ function init(){
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
 
+    //For player movement
     controls = new PointerLockControls(camera, renderer.domElement)
     // controls.lock()
     // Add an event listener for when the pointer is locked
@@ -83,7 +85,13 @@ function init(){
     floorGeom.setAttribute('color', new THREE.Float32BufferAttribute(floorCols, 3))
     let floorMat = new THREE.MeshBasicMaterial({vertexColors: true})
     const floor = new THREE.Mesh(floorGeom, floorMat)
-    scene.add(floor)
+    // scene.add(floor)
+
+    //Ocean floor
+    oceanFloor = addPlane()
+    oceanFloor.position.y = -150
+    oceanFloor.rotation.set(162, 0, 0)
+    scene.add(oceanFloor)
 
     window.addEventListener('resize', onWindowResize)
 
@@ -150,13 +158,13 @@ function addCube(){
 }
 
 //Make a plane [ground]
-function addPlane(){
-    let geometry = new THREE.PlaneGeometry(15, 15)
-    let material = new THREE.MeshPhongMaterial({color: 0x5500ff, side: THREE.DoubleSide})
-    let plane = new THREE.Mesh(geometry, material);
+// function addPlane(){
+//     let geometry = new THREE.PlaneGeometry(15, 15)
+//     let material = new THREE.MeshPhongMaterial({color: 0x5500ff, side: THREE.DoubleSide})
+//     let plane = new THREE.Mesh(geometry, material);
     
-    return plane
-}
+//     return plane
+// }
 
 // ================================================================================================
 

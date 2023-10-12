@@ -60,33 +60,6 @@ function init(){
 
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
 
-    //Floor for testing
-    let floorGeom = new THREE.PlaneGeometry(1000, 1000, 100, 100)
-    floorGeom.rotateX( -Math.PI / 2)
-    let pos = floorGeom.attributes.position
-
-    for(let i = 0, l = pos.count; i < l; i ++) {
-        vertex.fromBufferAttribute( pos, i )
-
-        vertex.x += Math.random() * 20 - 10
-        vertex.y += Math.random() * 2
-        vertex.z += Math.random() * 20 - 10
-
-        pos.setXYZ( i, vertex.x, vertex.y, vertex.z )
-    }
-    floorGeom = floorGeom.toNonIndexed() // ensure each face has unique vertices
-
-    pos = floorGeom.attributes.position
-    const floorCols = []
-    for(let i = 0, l = pos.count; i < l; i++){
-        col.setHSL(Math.random() * 0.3 + 0.5, 0.75, Math.random() * 0.25 + 0.75, THREE.SRGBColorSpace)
-        floorCols.push( col.r, col.g, col.b)
-    }
-    floorGeom.setAttribute('color', new THREE.Float32BufferAttribute(floorCols, 3))
-    let floorMat = new THREE.MeshBasicMaterial({vertexColors: true})
-    const floor = new THREE.Mesh(floorGeom, floorMat)
-    // scene.add(floor)
-
     //Ocean floor
     oceanFloor = addPlane()
     oceanFloor.position.y = -150
@@ -94,10 +67,66 @@ function init(){
     scene.add(oceanFloor)
 
     window.addEventListener('resize', onWindowResize)
+    addKeyListener()
 
     //HUD elements
     initHUD()
 }
+
+//Allows code to listen for keyboard input
+function addKeyListener(){
+    //Keydown = active input 
+    window.addEventListener('keydown', onKeyDown)
+    //When key is released, input !active
+    window.addEventListener('keyup', onKeyUp)
+}
+
+//Handles player movement on key events
+//When you press the keys
+const onKeyDown = function(event) {
+    switch (event.code) {
+        case 'ArrowUp':
+        case 'KeyW':
+            movementArr[0] = true
+            break
+        case 'ArrowDown':
+        case 'KeyS':
+            movementArr[1] = true
+            break
+        case 'ArrowLeft':
+        case 'KeyA':
+            movementArr[2] = true
+            break
+        case 'ArrowRight':
+        case 'KeyD':
+            movementArr[3] = true
+            break
+    }
+}
+//When you let go of the keys
+const onKeyUp = function(event) {
+    switch (event.code) {
+        case 'ArrowUp':
+        case 'KeyW':
+            movementArr[0] = false
+            break
+        case 'ArrowDown':
+        case 'KeyS':
+            movementArr[1] = false
+            break
+        case 'ArrowLeft':
+        case 'KeyA':
+            movementArr[2] = false
+            break
+        case 'ArrowRight':
+        case 'KeyD':
+            movementArr[3] = false
+            break
+    }
+}
+
+document.addEventListener( 'keydown', onKeyDown );
+document.addEventListener( 'keyup', onKeyUp );
 
 //Animation functions
 function animate() {
@@ -122,18 +151,14 @@ function animate() {
         direction.x = Number( movementArr[3] ) - Number( movementArr[2] )
         direction.normalize() // this ensures consistent movements in all directions
 
-        if (movementArr[0] || movementArr[1]) velocity.z -= direction.z * 400.0 * delta
-        if (movementArr[2] || movementArr[3]) velocity.x -= direction.x * 400.0 * delta
+        if (movementArr[0] || movementArr[1]) 
+            velocity.z -= direction.z * 400.0 * delta
+        if (movementArr[2] || movementArr[3])
+            velocity.x -= direction.x * 400.0 * delta
 
-        controls.moveRight( - velocity.x * delta )
-        controls.moveForward( - velocity.z * delta )
+        controls.moveRight(-velocity.x * delta)
+        controls.moveForward(-velocity.z * delta)
 
-        controls.getObject().position.y += ( velocity.y * delta ) // new behavior
-
-        if ( controls.getObject().position.y < 10 ) {
-            velocity.y = 0
-            controls.getObject().position.y = 10
-        }
     }
 
     prevTime = time
@@ -147,24 +172,6 @@ function onWindowResize(){
 }
 
 window.addEventListener('resize', onWindowResize)
-
-//Makes a cube
-function addCube(){
-    let geometry = new THREE.BoxGeometry(1, 1, 1)
-    let material = new THREE.MeshPhongMaterial({color: 0x55aaff})
-    let cube = new THREE.Mesh(geometry, material)
-
-    return cube
-}
-
-//Make a plane [ground]
-// function addPlane(){
-//     let geometry = new THREE.PlaneGeometry(15, 15)
-//     let material = new THREE.MeshPhongMaterial({color: 0x5500ff, side: THREE.DoubleSide})
-//     let plane = new THREE.Mesh(geometry, material);
-    
-//     return plane
-// }
 
 // ================================================================================================
 

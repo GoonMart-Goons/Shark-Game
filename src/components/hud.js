@@ -19,6 +19,9 @@ const contextHunger = canvasHunger.getContext("2d");
 
 const endTime = new Date().getTime() + 5 * 60 * 1000;
 
+const hungerDecay = 0.05
+const healthDecay = 0.025
+
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);
   
@@ -55,10 +58,10 @@ export function drawTime(){
 
 export function setBarNumber(){
     if(playerHunger > 0){
-        playerHunger = Math.max(0, playerHunger - 0.15);
+        playerHunger = Math.max(0, playerHunger - hungerDecay);
     }
     if(playerHunger <= 0){
-        playerHealth = Math.max(0, playerHealth - 0.05);
+        playerHealth = Math.max(0, playerHealth - healthDecay);
     }
     //console.log(playerHunger);
     drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");

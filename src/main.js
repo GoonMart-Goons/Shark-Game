@@ -2,25 +2,39 @@ import * as THREE from 'three';
 // import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
 import { PointerLockControls } from '../modules/PointerLockControls';
 
+import * as CANNON from 'cannon-es';
+import CannonDebugger from 'cannon-es-debugger';
+
 import { setBarNumber, drawTime, initHUD } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls, oceanFloor
+let camera, scene, renderer, controls, oceanFloor, physicsWorld, cube, cubeBody, cannonDebugger
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
-let raycaster
+let raycaster, terrainRaycaster, terrainRaycasterDirection
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
 const vertex = new THREE.Vector3();
 const col = new THREE.Color();
-
+const timeStep = 1 / 200;
 
 // ================================================================================================
 
 // F U N C T I O N S ==============================================================================
+
+//Temporary player 
+function addCube(){
+    let geometry = new THREE.BoxGeometry(10, 10, 10)
+    let material = new THREE.MeshPhongMaterial({color: 0x55aaff})
+    let cube = new THREE.Mesh(geometry, material)
+
+    return cube
+}
+
+
 //Initialize scene
 function init(){
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
@@ -29,6 +43,10 @@ function init(){
     scene = new THREE.Scene()
     scene.background = new THREE.Color(0xaaccff)
     scene.fog = new THREE.Fog(0x1010ff, 0, 750)
+
+    physicsWorld = new CANNON.World()
+    physicsWorld.gravity.set(0, -9.81, 0)
+    cannonDebugger = new CannonDebugger(scene, physicsWorld)
 
     renderer = new THREE.WebGLRenderer()
     // renderer.setPixelRatio(window.devicePixelRatio)
@@ -60,6 +78,21 @@ function init(){
     scene.add(controls.getObject())
 
     raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
+
+    terrainRaycaster = new THREE.Raycaster()
+    terrainRaycasterDirection = new THREE.Vector3(0, -1, 0) // Downward direction
+
+    // Cube
+    cube = addCube()
+    cube.position.set(0, 0, 0) // Initialize the position
+    cube.rotation.set(0, 0, 0)
+    scene.add(cube)
+
+    const cubeShape = new CANNON.Box(new CANNON.Vec3(5, 5, 5)) // Adjust the size as needed
+    cubeBody = new CANNON.Body({ mass: 1, material: new CANNON.Material() })
+    cubeBody.addShape(cubeShape)
+    cubeBody.position.set(20, 100, -170) // Set the initial position of the cube
+    physicsWorld.addBody(cubeBody)
 
     //Ocean floor
     oceanFloor = addPlane()
@@ -158,6 +191,49 @@ function animate() {
     }
 
     prevTime = time
+
+    //Cube animation
+    physicsWorld.step(timeStep);
+
+    // Update Three.js objects based on Cannon.js body positions
+    cube.position.copy(cubeBody.position);
+    //player.rotation.copy(cubeBody.quaternion.setFromEuler(new CANNON.Vec3(0, 0, 0), 'XYZ'));
+    // Convert the Cannon.js quaternion to Three.js quaternion
+    const cannonQuaternion = cubeBody.quaternion.clone(); // Clone the Cannon.js quaternion
+    const threeQuaternion = new THREE.Quaternion(
+    cannonQuaternion.x,
+    cannonQuaternion.y,
+    cannonQuaternion.z,
+    cannonQuaternion.w
+    );
+
+    // Set the Three.js player's rotation
+    cube.rotation.setFromQuaternion(threeQuaternion);
+
+    // Set the ray's origin to the player's current position
+    terrainRaycaster.ray.origin.copy(cube.position);
+
+    // Set the ray's direction
+    terrainRaycaster.ray.direction.copy(terrainRaycasterDirection);
+
+    // Set the maximum distance the ray can travel (adjust this according to your scene's scale)
+    const maxRayDistance = 25; // Adjust as needed
+    terrainRaycaster.far = maxRayDistance;
+
+    // Perform the raycasting
+    const intersections = terrainRaycaster.intersectObject(oceanFloor);
+
+    // Check if there are any intersections
+    if (intersections.length > 0) {
+        // There is a collision with the terrain (oceanFloor)
+        cubeBody.velocity.y = 0;
+    } else {
+        // No collision, you can continue updating the player's position
+        cubeBody.velocity.y = -9.81;
+    }
+
+    cannonDebugger.update();
+
     renderer.render(scene, camera)
 }
 

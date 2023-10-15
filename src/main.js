@@ -69,7 +69,10 @@ function init(){
     oceanFloor.rotation.set(162, 0, 0)
     scene.add(oceanFloor)
 
+    onWindowResize()
     window.addEventListener('resize', onWindowResize)
+
+    //MISO'S CODE
     playBackground(camera);
 
     addKeyListener()
@@ -82,6 +85,9 @@ function init(){
 function addKeyListener(){
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+
+    //MISO's code
+    window.addEventListener('g', playBite)
 }
 
 //Handles player movement on key events

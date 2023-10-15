@@ -1,6 +1,6 @@
+//THIS IS THE CODE THAT IS USED TO IMPLEMENT SOUND
+
 import * as THREE from 'three';
-//sound
-//var soundOn = false;
 localStorage.setItem("soundOn", "true")
 const listener = new THREE.AudioListener();
 const audioLoader = new THREE.AudioLoader();
@@ -23,7 +23,7 @@ buttonSettings.addEventListener("click", () =>{
 });
 
 
-
+//loads sound into audio loader
 export function playBackground(camera){
     camera.add(listener);
     audioLoader.load('./sounds/interface.mp3', function(buffer){
@@ -36,22 +36,6 @@ export function playBackground(camera){
         underwaterEffect.setLoop(true);
         underwaterEffect.setVolume(1.5);      
     });
-}
-
-/*export function turnSoundOff(){
-    if(soundOn){
-        soundOn = false;
-    }
-}
-
-export function turnSoundOn(){
-    if(!soundOn){
-        soundOn = true;
-    }
-}*/
-
-export function playBite(camera){
-    camera.add(listener);
     audioLoader.load('./sounds/eating-sound-effect-36186.mp3', function(buffer){
         bite.setBuffer(buffer);
         bite.setLoop(false);
@@ -59,6 +43,31 @@ export function playBite(camera){
     });
 }
 
+//sound on for the settings
+export function turnSoundOff(){
+    var soundOn = localStorage.getItem("soundOn")
+    if(soundOn === "true"){
+        localStorage.setItem("soundOn", "false")
+    }
+}
+
+//sound on for the settings
+export function turnSoundOn(){
+    var soundOn = localStorage.getItem("soundOn")
+    if(soundOn === "false"){
+        localStorage.setItem("soundOn", "true")
+    }
+}
+
+//code that plays bite sound
+export function playBite(){
+    console.log("Bite happening")
+    if(soundOn==="true"){
+        bite.play();
+    }
+}
+
+//plays background music and hides the button that activates it
 export function hide(){
     document.getElementById("startGame").style.display = "none";
     var soundOn = localStorage.getItem("soundOn")

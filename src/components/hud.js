@@ -1,9 +1,5 @@
 //HUD
-var playerHealth = 100; // Player's actual health
-var maxHealth = 100; // Maximum health
-
-var playerHunger = 100; // Player's actual hunger level
-var maxHunger = 100; 
+import {playerHealth, playerHunger, maxHealth, maxHunger, activeGame, endGame} from './gameLogic';
 
 const canvasHealth = document.getElementById("healthBar");
 const contextHealth = canvasHealth.getContext("2d");
@@ -18,9 +14,6 @@ const canvasHunger = document.getElementById("hungerBar");
 const contextHunger = canvasHunger.getContext("2d");
 
 const endTime = new Date().getTime() + 5 * 60 * 1000;
-
-const hungerDecay = 0.05
-const healthDecay = 0.025
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -42,6 +35,7 @@ export function setTextStyle(context){
 }
 
 export function drawScore(score){
+    contextScore.clearRect(0, 0, canvasScore.width, canvasScore.height);
     setTextStyle(contextScore);
     const stringScore = "Score: "+ score;
     contextScore.strokeText(stringScore, 10, 20);
@@ -51,21 +45,35 @@ export function drawScore(score){
 export function drawTime(){
     contextTime.clearRect(0, 0, canvasTime.width, canvasTime.height);
     setTextStyle(contextTime);
-    const stringTime = updateCountdown();
+    let stringTime = updateCountdown();
+    if (stringTime == 'Countdown expired!'){
+        endGame();
+    } 
+    if(activeGame == false){
+        stringTime = 'Game over!';
+    }
     contextTime.strokeText(stringTime, 10, 20);
     contextTime.fillText(stringTime, 10, 20);
 }
 
-export function setBarNumber(){
-    if(playerHunger > 0){
-        playerHunger = Math.max(0, playerHunger - hungerDecay);
+export function drawBars(){
+    const currentTime = new Date();
+    const isEvenSecond = currentTime.getSeconds() % 2 === 0;
+
+    let healthColor = "green";
+    let hungerColor = "purple";
+
+    if (playerHealth <= 20) {
+        healthColor = isEvenSecond ? "red" : "green";
     }
-    if(playerHunger <= 0){
-        playerHealth = Math.max(0, playerHealth - healthDecay);
+
+    if (playerHunger <= 20) {
+        hungerColor = isEvenSecond ? "red" : "purple";
     }
-    //console.log(playerHunger);
-    drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");
-    drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange");  
+
+    drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, healthColor);
+    drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, hungerColor);
+
 }
 
 export function updateCountdown() {
@@ -73,7 +81,7 @@ export function updateCountdown() {
     const timeRemaining = endTime - currentTime;
 
     if (timeRemaining <= 0) {
-      clearInterval(interval);
+      //clearInterval(interval);
       return 'Countdown expired!';
       //document.getElementById('time').innerHTML = 'Countdown expired!';
     } else {
@@ -95,10 +103,10 @@ export function initHUD(){
     
     canvasScore.style.position = "absolute";
     canvasScore.style.top = "10px";
-    canvasScore.style.left = "10px";
+    canvasScore.style.right = "20px";
 
     canvasTime.style.position = "absolute";
-    canvasTime.style.top = "10px";
+    canvasTime.style.top = "60px";
     canvasTime.style.right = "20px";
 
 }

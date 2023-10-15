@@ -5,7 +5,9 @@ import { PointerLockControls } from '../modules/PointerLockControls';
 import * as CANNON from 'cannon-es';
 import CannonDebugger from 'cannon-es-debugger';
 
-import { setBarNumber, drawTime, initHUD } from './components/hud';
+import {score, updateScore, updateHunger, updateHealth, setBarNumber, activeGame} from './components/gameLogic';
+
+import { drawBars, drawTime, drawScore, initHUD } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
 
 //G L O B A L   V A R I A B L E S =================================================================
@@ -141,18 +143,22 @@ const onKeyUp = function(event) {
         case 'ArrowUp':
         case 'KeyW':
             movementArr[0] = false
+            updateScore("smallFish") //-----REMOVE-----
             break
         case 'ArrowDown':
         case 'KeyS':
             movementArr[1] = false
+            updateHealth("bomb") //-----REMOVE-----
             break
         case 'ArrowLeft':
         case 'KeyA':
             movementArr[2] = false
+            updateHealth("healthBoost") //-----REMOVE-----
             break
         case 'ArrowRight':
         case 'KeyD':
             movementArr[3] = false
+            updateHunger("bigFish") //-----REMOVE-----
             break
     }
 }
@@ -166,7 +172,10 @@ function animate() {
 
     //HUD element updates
     setBarNumber()
+    drawBars()
     drawTime()
+    drawScore(score)
+
     const time = performance.now()
 
     if (controls.isLocked === true) {

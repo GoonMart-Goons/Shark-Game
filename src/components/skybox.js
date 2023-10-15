@@ -1,11 +1,11 @@
 //Skybox, texture from https://jkhub.org/files/file/3216-underwater-skybox/
 let materialArray = [];
-let texture_ft = new THREE.TextureLoader().load('./Images/uw_ft.jpg');
-let texture_bk = new THREE.TextureLoader().load('./Images/uw_bk.jpg');
-let texture_up = new THREE.TextureLoader().load('./Images/uw_up.jpg');
-let texture_dn = new THREE.TextureLoader().load('./Images/uw_dn.jpg');
-let texture_rt = new THREE.TextureLoader().load('./Images/uw_rt.jpg');
-let texture_lf = new THREE.TextureLoader().load('./Images/uw_lf.jpg');
+let texture_ft = new THREE.TextureLoader().load('../assets/images/uw_ft.jpg');
+let texture_bk = new THREE.TextureLoader().load('../assets/images/uw_bk.jpg');
+let texture_up = new THREE.TextureLoader().load('../assets/images/uw_up.jpg');
+let texture_dn = new THREE.TextureLoader().load('../assets/images/uw_dn.jpg');
+let texture_rt = new THREE.TextureLoader().load('../assets/images/uw_rt.jpg');
+let texture_lf = new THREE.TextureLoader().load('../assets/images/uw_lf.jpg');
 
 materialArray.push(new THREE.MeshBasicMaterial({map: texture_ft}));
 materialArray.push(new THREE.MeshBasicMaterial({map: texture_bk}));

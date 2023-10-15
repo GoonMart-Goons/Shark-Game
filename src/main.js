@@ -1,7 +1,8 @@
 import * as THREE from 'three';
 import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
-
 import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { playBackground, playBite } from './sound';
+
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -86,6 +87,8 @@ function init(){
     scene.add(floor)
 
     window.addEventListener('resize', onWindowResize)
+    playBackground(camera);
+
 
     //HUD elements
     initHUD()

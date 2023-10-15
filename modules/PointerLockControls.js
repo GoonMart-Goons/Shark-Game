@@ -1,4 +1,5 @@
 //Module from https://github.com/mrdoob/three.js/blob/master/examples/jsm/controls/PointerLockControls.js
+//Made a slight change to the moveForward function to also allow movement along the y-axis
 
 import {
 	Euler,

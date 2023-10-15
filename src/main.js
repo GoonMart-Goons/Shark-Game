@@ -4,13 +4,17 @@ import { PointerLockControls } from '../modules/PointerLockControls';
 
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
+import { initFish, animateFish } from './components/fish';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls, oceanFloor, player, fish
+let camera, scene, renderer, controls, oceanFloor, player, fish, physicsWorld, cube, cubeBody, cannonDebugger
 let world, playerHB, fishHB
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 var debugRenderer
+
+let fishArray = []; // An array to store fish objects
+const numFish = 20; // Number of fish in the environment
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
@@ -103,6 +107,13 @@ function init(){
     //HUD elements
     initHUD()
     onWindowResize()
+
+    //Init fish
+    initFish(fishArray, numFish)
+
+    for(var i = 0; i < numFish; i++){
+        scene.add(fishArray[i])
+    }
 }
 
 //Allows code to listen for keyboard input
@@ -209,6 +220,9 @@ function animate() {
     prevTime = time
 
     playerHB.position.copy(controls.getObject().position)
+
+    //Move fish
+    animateFish(fishArray)
 
     world.step(1 / 60)
 

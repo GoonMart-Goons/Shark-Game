@@ -5,13 +5,13 @@ import { PointerLockControls } from '../modules/PointerLockControls';
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
+import { updateScore, updateHunger, updateHealth, activeGame} from './components/gameLogic';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls, oceanFloor, player, fish, physicsWorld, cube, cubeBody, cannonDebugger
+let camera, scene, renderer, controls, oceanFloor, player, fish
 let world, playerHB, fishHB
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
-var debugRenderer
 
 let fishArray = []; // An array to store fish objects
 const numFish = 20; // Number of fish in the environment
@@ -48,7 +48,7 @@ function init(){
     gameContainer.appendChild(renderer.domElement)
 
     //Light source
-    const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 2.5)
+    const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 10)
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
 
@@ -73,11 +73,12 @@ function init(){
     player = addCube()
     player.position.set(0, -1, -2)
     
-    playerHB = addCubeHB(controls.getObject().position)
+    const offset = controls.getObject().position.add(new THREE.Vector3(0, -1, -2))
+    playerHB = addCubeHB(offset)
     //Collision detection with fish
     playerHB.addEventListener("collide", function(event){
         if(event.body === fishHB){
-            console.log('Hey, you hit me!')
+            updateScore('smallFish')
             fish.material.color.set('red')
         }
     }) 

@@ -5,6 +5,8 @@ var maxHealth = 100; // Maximum health
 var playerHunger = 100; // Player's actual hunger level
 var maxHunger = 100; 
 
+var score = 0;
+
 const canvasHealth = document.getElementById("healthBar");
 const contextHealth = canvasHealth.getContext("2d");
 
@@ -33,7 +35,7 @@ export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     const healthWidth = (health / maxHealth) * canvas.width;
     context.fillStyle = colour;
     context.fillRect(0, 0, healthWidth, canvasHealth.height);
-  }
+}
   
 export function setTextStyle(context){
     context.fillStyle = "white";
@@ -41,7 +43,28 @@ export function setTextStyle(context){
     context.strokeStyle = "white";
 }
 
-export function drawScore(score){
+export function setPlayerHealth(health){
+    playerHealth = health
+}
+
+export function setPlayerHunger(hunger){
+    playerHunger = hunger
+}
+
+export function incScore(points){
+    score += points
+}
+
+export function getPlayerHealth(){
+    return playerHealth
+}
+
+export function getPlayerHunger(){
+    return playerHunger
+}
+
+export function drawScore(){
+    contextScore.clearRect(0, 0, canvasScore.width, canvasScore.height)
     setTextStyle(contextScore);
     const stringScore = "Score: "+ score;
     contextScore.strokeText(stringScore, 10, 20);

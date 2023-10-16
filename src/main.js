@@ -1,17 +1,22 @@
 import * as THREE from 'three';
-// import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls';
+import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
 
-import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { playBackground, playBite } from './sound';
 
 import { addPlane, planeGrid } from './components/terrain';
+import { initFish, animateFish } from './components/fish';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls, oceanFloor
+let camera, scene, renderer, controls, oceanFloor, player, fish, physicsWorld, cube, cubeBody, cannonDebugger
+let world, playerHB, fishHB
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
-let raycaster
+var debugRenderer
+
+let fishArray = []; // An array to store fish objects
+const numFish = 20; // Number of fish in the environment
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
@@ -25,25 +30,32 @@ const col = new THREE.Color();
 // F U N C T I O N S ==============================================================================
 //Initialize scene
 function init(){
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
-    camera.position.y = 10
+    //CANNON world for physics
+    world = new CANNON.World()
 
+    //Camera init & settings
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+    // camera.position.y = 10
+    const gameContainer = document.getElementById('game-container');
+
+    //Scene init
     scene = new THREE.Scene()
     scene.background = new THREE.Color(0xaaccff)
     scene.fog = new THREE.Fog(0x1010ff, 0, 750)
 
+    //Renderer init
     renderer = new THREE.WebGLRenderer()
-    // renderer.setPixelRatio(window.devicePixelRatio)
     renderer.setSize(window.innerWidth / window.innerHeight)
-    document.body.appendChild(renderer.domElement)
+    //document.body.appendChild(renderer.domElement)
+    gameContainer.appendChild(renderer.domElement)
 
+    //Light source
     const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 2.5)
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
 
     //For player movement
     controls = new PointerLockControls(camera, renderer.domElement)
-    // controls.lock()
     // Add an event listener for when the pointer is locked
     controls.addEventListener('lock', () => {
         console.log('Pointer is now locked.')
@@ -59,9 +71,30 @@ function init(){
         controls.lock()
     })
 
-    scene.add(controls.getObject())
+    //Make player object child of camera + add them to scene
+    player = addCube()
+    player.position.set(0, -1, -2)
+    
+    playerHB = addCubeHB(controls.getObject().position)
+    //Collision detection with fish
+    playerHB.addEventListener("collide", function(event){
+        if(event.body === fishHB){
+            console.log('Hey, you hit me!')
+            fish.material.color.set('red')
+        }
+    }) 
 
-    raycaster = new THREE.Raycaster(new THREE.Vector3(), new THREE.Vector3(0, -1, 0), 0, 10)
+    controls.getObject().add(player)
+    scene.add(controls.getObject())
+    world.addBody(playerHB)
+
+    //Add fish to random parts of the world
+    fish = addCube()
+    fish.position.set(3, 2, 5)
+    fishHB = addCubeHB(fish.position)
+    fish.material.color.set('green')
+    scene.add(fish)
+    world.addBody(fishHB)
 
     //Ocean floor
     oceanFloor = addPlane()
@@ -69,7 +102,12 @@ function init(){
     oceanFloor.rotation.set(162, 0, 0)
     scene.add(oceanFloor)
 
-    onWindowResize()
+    //For debugging
+    // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
+
+    //For debugging
+    // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
+
     window.addEventListener('resize', onWindowResize)
 
     //MISO'S CODE
@@ -79,6 +117,14 @@ function init(){
 
     //HUD elements
     initHUD()
+    onWindowResize()
+
+    //Init fish
+    initFish(fishArray, numFish)
+
+    for(var i = 0; i < numFish; i++){
+        scene.add(fishArray[i])
+    }
 }
 
 //Allows code to listen for keyboard input
@@ -134,8 +180,26 @@ const onKeyUp = function(event) {
     }
 }
 
-document.addEventListener( 'keydown', onKeyDown );
-document.addEventListener( 'keyup', onKeyUp );
+document.addEventListener('keydown', onKeyDown)
+document.addEventListener('keyup', onKeyUp) 
+
+function addCube(){
+    const geom = new THREE.BoxGeometry(1, 1, 1)
+    const mat = new THREE.MeshBasicMaterial({color: 0x7788ff})
+    const cube = new THREE.Mesh(geom, mat)
+
+    return cube
+}
+
+function addCubeHB(objPosision){
+    const cubeHB = new CANNON.Body({
+        mass: 1,
+        shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
+    })
+    cubeHB.position.copy(objPosision)
+
+    return cubeHB
+}
 
 //Animation functions
 function animate() {
@@ -144,8 +208,9 @@ function animate() {
     //HUD element updates
     setBarNumber()
     drawTime()
-    const time = performance.now()
 
+    //Camera movement 
+    const time = performance.now()
     if (controls.isLocked === true) {
 
         const delta = (time - prevTime) / 1000
@@ -166,8 +231,22 @@ function animate() {
         controls.moveRight(-velocity.x * delta)
         controls.moveForward(-velocity.z * delta)
     }
-
     prevTime = time
+
+    playerHB.position.copy(controls.getObject().position)
+
+    //Move fish
+    animateFish(fishArray)
+
+    world.step(1 / 60)
+
+    // console.log("rotation =", player.rotation)
+    // console.log("position =", player.position)
+    // console.log("controls =", controls.getObject().position)
+    // console.log("player =", player.position)
+    
+
+    // debugRenderer.update()
     renderer.render(scene, camera)
 }
 

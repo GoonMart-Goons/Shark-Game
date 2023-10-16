@@ -101,4 +101,5 @@ export function initHUD(){
     canvasTime.style.top = "10px";
     canvasTime.style.right = "20px";
 
+    drawScore(0)
 }

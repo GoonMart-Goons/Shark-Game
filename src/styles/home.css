@@ -1,0 +1,109 @@
+body { 
+    margin: 0;
+    
+    font-family: 'Grechen Fuemen', cursive;}
+
+.landing-logo{
+    position: relative;
+    top: 5%;
+    z-index: 1;
+    object-fit: cover;
+    text-decoration: none;
+    color: rgb(0, 0, 0);
+    float: left;
+    text-shadow: #000080;
+    font-size: 200%;
+    font-weight: bold;
+  }
+
+  .landing{
+    position: absolute;
+    overflow: hidden;
+    width: 100%;
+    height: 100%; 
+    margin: 0;
+    padding: 0;
+  }
+  
+   .landing::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(6, 6, 94, 0.4); 
+    z-index: 1;
+  } 
+  
+  .landing-background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: 0;
+  }
+  
+  .landing-background img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  
+  .home-heads{
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+    /* width: 100%; */
+    /* bottom: 30%; */
+    z-index: 2;
+  }
+  
+  .home-head1{
+    color: #000080;
+    /* background-color: rgba(245, 241, 1, 0.911); */
+    position: relative;
+    font-size: 80px;
+    text-align: center;
+    padding: 0;
+    margin: 20px;
+    margin-top: 40px;
+    background-image: linear-gradient(45deg, rgb(36, 196, 44) 30%,yellow 60%);
+    background-clip: text;
+    -webkit-background-clip: text; /* For webkit browsers (e.g., Safari) */
+    color: transparent;
+  }
+  
+  .home-head2{
+    position: relative;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    background-color: rgba(1, 127, 245, 0.829);;
+    border: yellow solid 2px;
+    border-radius: 25px;
+    padding: 12px 10px;
+    margin: 10px;
+    display: inline-block;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Architects Daughter', cursive;
+  }
+
+  #startButton, #settingsButton{
+    position: relative;
+    background-color: rgba(245, 241, 1, 0.6);
+    color: white;
+    font-size: 24px;
+    padding: 10px 15px;
+    border: rgb(6, 15, 99) solid 2px;
+    cursor: pointer;
+    border-radius: 35px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 2;
+    margin: 20px;
+    font-family: 'Architects Daughter', cursive;
+  }

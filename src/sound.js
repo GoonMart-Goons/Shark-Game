@@ -13,7 +13,6 @@ const buttonSettings = document.getElementById("settings_button");
 button.style.position = "absolute";
 button.style.top = "80px";
 button.style.right = "80px";
-
 buttonSettings.style.position = "absolute";
 buttonSettings.style.top = "100px";
 buttonSettings.style.right = "80px";

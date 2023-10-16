@@ -3,19 +3,81 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Shark Attack</title>
-		<style>
-			body { margin: 0; }
-		</style>
+        <link rel = "stylesheet" href="./styles/home.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Grechen+Fuemen&display=swap" rel="stylesheet">
 	</head>
+
 	<body>
-		<div class = "hud-display">
-			<canvas id="score" width="200" height="30"></canvas>
-			<canvas id="healthBar" width="500%" height="30"></canvas>
-			<canvas id="time" width="200" height="30"></canvas>
-		</div>
-		<canvas id="hungerBar" width="250%" height="30"></canvas>
-		<button id="startGame">Play Music</button>
-		<button id="settings_button">Settings</button>
-		<script type="module" src="main.js"></script>
+            <!--display home page -->
+             <div id="app" class = "landing"> 
+                <div class="landing-background">
+                    <img src=./assets/bg1.gif alt="Background GIF" />
+                   </div>
+                
+                   <div class="home-heads">
+                       <h1 class="home-head1" id="home-h1">SHARK ATTACK</h1>
+                       <button id="startButton">START GAME</button><br/>
+					   <button id="settingsButton">SETTINGS</button><br/> 	
+                       <a href = "/" class="home-head2">How To Play</a> <br/>
+                        <a href = "/" class="home-head2">Career</a>		<br/>
+						
+						
+                        
+                        <a href = "/" class="home-head2">Credits</a><br/>		
+                        
+                    </div>
+            </div>
+            
+			<div id="settings">
+				<button id="sound-on">Sound On</button>
+				<button id="sound-off">Sound Off</button>
+				<button id="backToHomeButton">Back to home</button>
+				<script type="module" src="basicSettings.js"></script>
+			</div> 
+            <!-- display game -->
+            <div id="game-container" style="display: none;">
+                <div class = "hud-display">
+                    <canvas id="score" width="200" height="30"></canvas>
+                    <canvas id="healthBar" width="500%" height="30"></canvas>
+                    <canvas id="time" width="200" height="30"></canvas>
+                </div>
+                <canvas id="hungerBar" width="250%" height="30"></canvas>
+				<button id="startGame">START GAME</button><br/>
+				<button id="settings_button">START GAME</button><br/>
+            </div>
+
+
+            <script>
+                // Check if we should display the game page
+                document.getElementById('startButton').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show the game container
+                    document.getElementById('game-container').style.display = 'block';
+        
+                    // Load your Three.js game script dynamically
+                    const script = document.createElement('script');
+                    script.type = 'module';
+                    script.src = '/main.js';
+                    document.body.appendChild(script);
+                });
+
+				document.getElementById('settingsButton').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show the game container
+                    document.getElementById('settings').style.display = 'block';
+                });
+
+				document.getElementById('backToHomeButton').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'block';
+                    // Show the game container
+                    document.getElementById('settings').style.display = 'none';
+                });
+            </script>
 	</body>
 </html>

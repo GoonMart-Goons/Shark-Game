@@ -3,7 +3,7 @@ import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
 
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
-import { playBackground, playBite } from './sound';
+import { playBackgroundMusic, playBite, addSounds} from './sound';
 
 import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
@@ -107,17 +107,17 @@ function init(){
 
     //For debugging
     // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
-
+    onWindowResize()
     window.addEventListener('resize', onWindowResize)
 
     //MISO'S CODE
-    playBackground(camera);
+    addSounds(camera);
 
     addKeyListener()
 
     //HUD elements
     initHUD()
-    onWindowResize()
+    
 
     //Init fish
     initFish(fishArray, numFish)
@@ -131,9 +131,6 @@ function init(){
 function addKeyListener(){
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
-
-    //MISO's code
-    window.addEventListener('g', playBite)
 }
 
 //Handles player movement on key events
@@ -157,6 +154,8 @@ const onKeyDown = function(event) {
             movementArr[3] = true
             break
     }
+    playBackgroundMusic()
+    playBite()
 }
 //When you let go of the keys
 const onKeyUp = function(event) {
@@ -178,6 +177,7 @@ const onKeyUp = function(event) {
             movementArr[3] = false
             break
     }
+    
 }
 
 document.addEventListener('keydown', onKeyDown)

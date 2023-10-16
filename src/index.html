@@ -45,8 +45,6 @@
                     <canvas id="time" width="200" height="30"></canvas>
                 </div>
                 <canvas id="hungerBar" width="250%" height="30"></canvas>
-				<button id="startGame">START GAME</button><br/>
-				<button id="settings_button">START GAME</button><br/>
             </div>
 
 
@@ -55,6 +53,8 @@
                 document.getElementById('startButton').addEventListener('click', () => {
                     // Hide the home page
                     document.getElementById('app').style.display = 'none';
+
+					document.getElementById('settings').style.display = 'none';
                     // Show the game container
                     document.getElementById('game-container').style.display = 'block';
         
@@ -77,6 +77,17 @@
                     document.getElementById('app').style.display = 'block';
                     // Show the game container
                     document.getElementById('settings').style.display = 'none';
+                });
+
+				document.getElementById('sound-on').addEventListener('click', () => {
+                    localStorage.setItem("soundOn", "true")
+					var soundOn = localStorage.getItem("soundOn")
+					console.log(soundOn)
+                });
+				document.getElementById('sound-off').addEventListener('click', () => {
+                    localStorage.setItem("soundOn", "false")
+					var soundOn = localStorage.getItem("soundOn")
+					console.log(soundOn)
                 });
             </script>
 	</body>

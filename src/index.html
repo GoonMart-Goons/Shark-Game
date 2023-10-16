@@ -4,18 +4,13 @@
 		<meta charset="utf-8">
 		<title>Shark Attack</title>
         <link rel = "stylesheet" href="./styles/home.css">
-		<style>
-			body { margin: 0; }
-		</style>
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Grechen+Fuemen&display=swap" rel="stylesheet">
 	</head>
-	<body>
-		<div class = "hud-display">
-			<canvas id="score" width="200" height="30"></canvas>
-			<canvas id="healthBar" width="500%" height="30"></canvas>
-			<canvas id="time" width="200" height="30"></canvas>
-		</div>
-		<canvas id="hungerBar" width="250%" height="30"></canvas>
 
+	<body>
             <!--display home page -->
              <div id="app" class = "landing"> 
                 <div class="landing-background">
@@ -23,19 +18,24 @@
                    </div>
                 
                    <div class="home-heads">
-                       <h1 class="home-head1" id="home-h1">Fish World</h1>
+                       <h1 class="home-head1" id="home-h1">SHARK ATTACK</h1>
+                       <button id="startButton">START GAME</button><br/>	
                        <a href = "/" class="home-head2">How To Play</a> <br/>
                         <a href = "/" class="home-head2">Career</a>		<br/>   
                         <a href = "/" class="home-head2">Settings</a>	<br/>
-                        <a href = "/" class="home-head2">Credits</a><br/>
-                        <a href = "/" class="home-head2">Terms and Conditions</a><br/>				
-                        <button id="startButton">START GAME</button>
+                        <a href = "/" class="home-head2">Credits</a><br/>		
+                        
                     </div>
             </div>
             
             <!-- display game -->
             <div id="game-container" style="display: none;">
-                
+                <div class = "hud-display">
+                    <canvas id="score" width="200" height="30"></canvas>
+                    <canvas id="healthBar" width="500%" height="30"></canvas>
+                    <canvas id="time" width="200" height="30"></canvas>
+                </div>
+                <canvas id="hungerBar" width="250%" height="30"></canvas>
             </div>
             <script>
                 // Check if we should display the game page

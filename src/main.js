@@ -1,10 +1,14 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
+import * as YUKA from 'yuka'; // Import the YUKA library
+
+// Import any other required dependencies here, if any
+
 
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
-import { initFish, animateFish } from './components/fish';
+import { initFish, animateFish, updateFish } from './components/fish';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -14,7 +18,8 @@ let movementArr = [false, false, false, false] //Up, Down, Left, Right
 var debugRenderer
 
 let fishArray = []; // An array to store fish objects
-const numFish = 20; // Number of fish in the environment
+let vehicleArray = []// vehicle array
+const numFish = 50; // Number of fish in the environment
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
@@ -22,10 +27,17 @@ const direction = new THREE.Vector3();
 const vertex = new THREE.Vector3();
 const col = new THREE.Color();
 
+//assists with animations
+let entityManager = new YUKA.EntityManager();
+let time2 = new YUKA.Time()
 
 // ================================================================================================
 
 // F U N C T I O N S ==============================================================================
+//assists with animations
+function sync (entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix);
+}
 //Initialize scene
 function init(){
     //CANNON world for physics
@@ -113,6 +125,25 @@ function init(){
 
     for(var i = 0; i < numFish; i++){
         scene.add(fishArray[i])
+        //attempt to animate fish in world
+        vehicleArray.push(new YUKA.Vehicle());
+        vehicleArray[i].setRenderComponent(fishArray[i], sync) ;
+
+        vehicleArray[i].maxSpeed = 5; // Change 5 to your desired speed
+
+        const wanderBehavior = new YUKA.WanderBehavior();
+        wanderBehavior.weight = 1.6; // Increase the weight to make the behavior more prominent
+        vehicleArray[i].steering.add(wanderBehavior);
+
+        entityManager.add(vehicleArray[i]) ;
+        vehicleArray[i].rotation.fromEuler(0, 2 * Math.PI * Math.random(),0);
+        vehicleArray[i].position.x=Math.random() * 1000 - 500;
+        vehicleArray[i].position.y=Math.random() * 1000 - 500;
+        vehicleArray[i].position.z=Math.random() * 400 - 150;;
+
+
+
+        //console.log("check this out:", vehicleArray[i])
     }
 }
 
@@ -222,7 +253,16 @@ function animate() {
     playerHB.position.copy(controls.getObject().position)
 
     //Move fish
-    animateFish(fishArray)
+    //animateFish(fishArray)
+    // const delta = time2.update().getDelta();
+    // entityManager.update(delta);
+    // console.log("hey over here", fishArray[0].position);
+    const delta2 = time2.update().getDelta();
+    for (let i = 0; i < numFish; i++) {
+        vehicleArray[i].update(delta2); // Update the YUKA vehicle
+        fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
+    }
+
 
     world.step(1 / 60)
 

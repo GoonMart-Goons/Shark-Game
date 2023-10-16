@@ -15,7 +15,8 @@
     "dat.gui": "^0.7.9",
     "pointerlockcontrols": "^1.0.2",
     "three": "^0.156.1",
-    "three-orbitcontrols": "^2.110.3"
+    "three-orbitcontrols": "^2.110.3",
+    "yuka": "^0.7.8"
   },
   "devDependencies": {
     "vite": "^4.4.9"

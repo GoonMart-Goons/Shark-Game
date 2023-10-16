@@ -6,8 +6,11 @@ export function createFish() {
     const material = new THREE.MeshPhongMaterial({ color: 0xff0000 }); // Adjust color
     const fish = new THREE.Mesh(geometry, material);
 
-    // Set initial position for the fish
-    fish.position.set(Math.random() * 1000 - 500, 5, Math.random() * 1000 - 500);
+    // Set initial position for the fish with random height
+    const x = Math.random() * 1000 - 500;
+    const z = Math.random() * 1000 - 500;
+    const y = Math.random() * 400 - 150; // Random height
+    fish.position.set(x, y, z);
 
     // Return the fish object
     return fish;
@@ -23,24 +26,7 @@ export function initFish(fishArray, numFish) {
     return fishArray
 }
 
-// Function to update fish positions
-export function updateFish(fishArray, numFish) {
-    for(var i = 0; i < numFish; i++){
-        // Add random motion to the fish
-        const fishSpeed = 0.5;
-        fishArray[i].position.x += (Math.random() - 0.5) * fishSpeed;
-        fishArray[i].position.z += (Math.random() - 0.5) * fishSpeed;
 
-        // add more complex motion behaviors here
-
-        // Wrap the fish within the boundaries ( using a 1000x1000 area)
-        const boundary = 500;
-        if (fishArray[i].position.x < -boundary) fishArray[i].position.x = boundary;
-        if (fishArray[i].position.x > boundary) fishArray[i].position.x = -boundary;
-        if (fishArray[i].position.z < -boundary) fishArray[i].position.z = boundary;
-        if (fishArray[i].position.z > boundary) fishArray[i].position.z = -boundary;
-    };
-}
 
 // Function to handle fish eaten by the shark
 export function fishEaten(fish) {
@@ -54,7 +40,6 @@ export function fishEaten(fish) {
 
 // Call this function to update fish positions
 export function animateFish() {
-    updateFish();
     // add more behaviors or interactions
 
     // Replace fish when eaten by the shark

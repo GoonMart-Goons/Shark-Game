@@ -69,7 +69,6 @@ export function playBite(){
 
 //plays background music and hides the button that activates it
 export function hide(){
-    document.getElementById("startGame").style.display = "none";
     var soundOn = localStorage.getItem("soundOn")
     if(soundOn==="true"){
         music.play();

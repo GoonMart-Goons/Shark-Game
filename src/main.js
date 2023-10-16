@@ -116,8 +116,6 @@ function init(){
 
     window.addEventListener('resize', onWindowResize)
 
-    //MISO'S CODE
-    playBackground(camera);
 
     addKeyListener()
 
@@ -127,7 +125,7 @@ function init(){
 
     //Add sounds to game
     addSounds(camera)
-    playBackgroundMusic()
+    
 
     //Init fish
     initFish(fishArray, numFish)
@@ -152,6 +150,7 @@ function addKeyListener(){
 //Handles player movement on key events
 //When you press the keys
 const onKeyDown = function(event) {
+    playBackgroundMusic()
     switch (event.code) {
         case 'ArrowUp':
         case 'KeyW':

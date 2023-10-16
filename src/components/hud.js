@@ -43,12 +43,25 @@ export function setTextStyle(context){
     context.strokeStyle = "white";
 }
 
-export function setPlayerHealth(health){
-    playerHealth = health
+export function incPlayerHealth(health){
+    playerHealth += health
+
+    if(playerHealth > maxHealth)
+        playerHealth = 100
 }
 
-export function setPlayerHunger(hunger){
-    playerHunger = hunger
+export function incPlayerHunger(hunger){
+    if(playerHealth + hunger > maxHealth){
+        playerHealth = maxHealth
+        playerHunger += hunger
+    } 
+    else if(playerHealth < maxHealth)
+        incPlayerHealth(hunger)
+    else
+        playerHunger += hunger
+
+    if(playerHunger > maxHunger)
+        playerHunger = 100
 }
 
 export function incScore(points){
@@ -83,7 +96,7 @@ export function setBarNumber(){
     if(playerHunger > 0){
         playerHunger = Math.max(0, playerHunger - hungerDecay);
     }
-    if(playerHunger <= 0){
+    else if(playerHunger <= 0){
         playerHealth = Math.max(0, playerHealth - healthDecay);
     }
     //console.log(playerHunger);

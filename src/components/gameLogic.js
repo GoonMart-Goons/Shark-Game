@@ -1,5 +1,5 @@
-import { drawScore, setBarNumber, setPlayerHealth, 
-         setPlayerHunger, incScore, getPlayerHealth, getPlayerHunger } from "./hud";
+import { drawScore, setBarNumber, incPlayerHealth, 
+         incPlayerHunger, incScore, getPlayerHealth, getPlayerHunger } from "./hud";
 
 export let activeGame = true;
 export let score = 0;
@@ -25,15 +25,15 @@ const healthEvents = new Map([
 ])
 
 export function updateHunger(hungerEvent){
-    var playerHunger = getPlayerHunger()
-    playerHunger = Math.min(maxHunger, playerHunger + hungerEvents.get(hungerEvent));
-    setPlayerHunger(playerHunger)
+    var hungerInc = hungerEvents.get(hungerEvent)
+    incPlayerHunger(hungerInc)
 }
 
 export function updateHealth(healthEvent){
     var playerHealth = getPlayerHealth()
-    playerHealth = Math.min(maxHealth, playerHealth + healthEvents.get(healthEvent));
-    setPlayerHealth(playerHealth)
+    const healthInc = healthEvents.get(healthEvent)
+    playerHealth = Math.min(maxHealth, playerHealth + healthInc);
+    incPlayerHealth(healthInc)
 }
 
 // export function setBarNumber(){
@@ -51,6 +51,7 @@ export function updateHealth(healthEvent){
 
 export function updateScore(event){
     incScore(scoreEvents.get(event))
+    updateHunger(event)
     drawScore()
 }
 

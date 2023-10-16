@@ -2,12 +2,12 @@ import * as THREE from 'three';
 
 // Function to create a single fish object
 export function createFish() {
-    const geometry = new THREE.BoxGeometry(5, 5, 5); // Adjust size as needed
-    const material = new THREE.MeshPhongMaterial({ color: 0xff0000 }); // Adjust color
+    const geometry = new THREE.BoxGeometry(1, 1, 1); // Adjust size as needed
+    const material = new THREE.MeshPhongMaterial({ color: 'lime' }); // Adjust color
     const fish = new THREE.Mesh(geometry, material);
 
     // Set initial position for the fish
-    fish.position.set(Math.random() * 1000 - 500, 5, Math.random() * 1000 - 500);
+    fish.position.set(Math.random() * 500 - 250, 5, Math.random() * 500 - 250);
 
     // Return the fish object
     return fish;

@@ -6,6 +6,7 @@ import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
 import { updateScore, updateHunger, updateHealth, activeGame} from './components/gameLogic';
+import { playBackgroundMusic, playBite, addSounds } from './components/sound';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -14,6 +15,7 @@ let world, playerHB, fishHB
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
+let fishHBArray = []
 const numFish = 20; // Number of fish in the environment
 
 let prevTime = performance.now();
@@ -78,8 +80,16 @@ function init(){
     //Collision detection with fish
     playerHB.addEventListener("collide", function(event){
         if(event.body === fishHB){
-            updateScore('smallFish')
+            updateScore('bigFish')
+            playBite()
             fish.material.color.set('red')
+        }
+
+        if(fishHBArray.includes(event.body)){
+            const fishIdx = fishHBArray.indexOf(event.body)
+            updateScore('smallFish')
+            playBite()
+            fishArray[fishIdx].material.color.set('red')
         }
     }) 
 
@@ -111,11 +121,18 @@ function init(){
     initHUD()
     onWindowResize()
 
+    //Add sounds to game
+    addSounds(camera)
+    playBackgroundMusic()
+
     //Init fish
     initFish(fishArray, numFish)
 
     for(var i = 0; i < numFish; i++){
         scene.add(fishArray[i])
+        const fshHB = addCubeHB(fishArray[i].position)
+        fishHBArray.push(fshHB)
+        world.addBody(fishHBArray[i])
     }
 }
 

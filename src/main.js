@@ -155,7 +155,7 @@ const onKeyDown = function(event) {
             break
     }
     playBackgroundMusic()
-    playBite()
+    //playBite()
 }
 //When you let go of the keys
 const onKeyUp = function(event) {

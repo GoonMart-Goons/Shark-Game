@@ -48,11 +48,11 @@
 
                 <h1 class="page-head">Settings</h1>
                 <p class="page-text">Music
-				<button id="sound-on"> On</button>
-				<button id="sound-off"> Off</button></p>
+				<button id="music-on"> On</button>
+				<button id="music-off"> Off</button></p>
                 <p class="page-text">Effects
-				<button id="sound-on"> On</button>
-				<button id="sound-off"> Off</button> </p>
+				<button id="fx-on"> On</button>
+				<button id="fx-off"> Off</button> </p>
 				
 				<script type="module" src="basicSettings.js"></script>
 			</div>
@@ -198,6 +198,28 @@
                     document.getElementById('app').style.display = 'block';
                     // Hide current page
                     document.getElementById('career').style.display = 'none';
+                });
+
+                document.getElementById('music-on').addEventListener('click', () => {
+                    localStorage.setItem("musicOn", "true")
+					var soundOn = localStorage.getItem("musicOn")
+					console.log(soundOn)
+                });
+				document.getElementById('music-off').addEventListener('click', () => {
+                    localStorage.setItem("musicOn", "false")
+					var soundOn = localStorage.getItem("musicOn")
+					console.log(soundOn)
+                });
+
+                document.getElementById('fx-on').addEventListener('click', () => {
+                    localStorage.setItem("fxOn", "true")
+					var soundOn = localStorage.getItem("fxOn")
+					console.log(soundOn)
+                });
+				document.getElementById('fx-off').addEventListener('click', () => {
+                    localStorage.setItem("fxOn", "false")
+					var soundOn = localStorage.getItem("fxOn")
+					console.log(soundOn)
                 });
             </script>
 

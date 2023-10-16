@@ -31,20 +31,38 @@ export function addSounds(camera){
 }
 
 //sound on for the settings
-export function turnSoundOff(){
+export function turnMusicOff(){
     populateNullLocalStorage()
-    var soundOn = localStorage.getItem("soundOn")
+    var soundOn = localStorage.getItem("musicOn")
     if(soundOn === "true"){
-        localStorage.setItem("soundOn", "false")
+        localStorage.setItem("musicOn", "false")
     }
 }
 
 //sound on for the settings
-export function turnSoundOn(){
+export function turnMusicOn(){
     populateNullLocalStorage()
-    var soundOn = localStorage.getItem("soundOn")
+    var soundOn = localStorage.getItem("musicOn")
     if(soundOn === "false"){
-        localStorage.setItem("soundOn", "true")
+        localStorage.setItem("musicOn", "true")
+    }
+}
+
+//sound on for the settings
+export function turnFXOff(){
+    populateNullLocalStorage()
+    var soundOn = localStorage.getItem("fxOn")
+    if(soundOn === "true"){
+        localStorage.setItem("fxOn", "false")
+    }
+}
+
+//sound on for the settings
+export function turnFXOn(){
+    populateNullLocalStorage()
+    var soundOn = localStorage.getItem("fxOn")
+    if(soundOn === "false"){
+        localStorage.setItem("fxOn", "true")
     }
 }
 
@@ -52,23 +70,26 @@ export function turnSoundOn(){
 export function playBite(){
     populateNullLocalStorage()
     // console.log("Bite happening")
-    var soundOn = localStorage.getItem("soundOn")
+    var soundOn = localStorage.getItem("fxOn")
     if(soundOn==="true"){
         bite.play();
     }
 }
 
 //sets sound
-function populateNullLocalStorage(){
-    if (localStorage.getItem("soundOn") === null) {
-        localStorage.setItem("soundOn", "true")
+export function populateNullLocalStorage(){
+    if (localStorage.getItem("musicOn") === null) {
+        localStorage.setItem("musicOn", "true")
+    }
+    if (localStorage.getItem("fxOn") === null) {
+        localStorage.setItem("fxOn", "true")
     }
 }
 
 //plays background music and hides the button that activates it
 export function playBackgroundMusic(){
     populateNullLocalStorage()
-    var soundOn = localStorage.getItem("soundOn")
+    var soundOn = localStorage.getItem("musicOn")
     if(soundOn==="true"){
         music.play();
         underwaterEffect.play();

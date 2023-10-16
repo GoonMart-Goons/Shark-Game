@@ -34,6 +34,7 @@ function init(){
     //Camera init & settings
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
     // camera.position.y = 10
+    const gameContainer = document.getElementById('game-container');
 
     //Scene init
     scene = new THREE.Scene()
@@ -43,7 +44,8 @@ function init(){
     //Renderer init
     renderer = new THREE.WebGLRenderer()
     renderer.setSize(window.innerWidth / window.innerHeight)
-    document.body.appendChild(renderer.domElement)
+    //document.body.appendChild(renderer.domElement)
+    gameContainer.appendChild(renderer.domElement)
 
     //Light source
     const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 2.5)

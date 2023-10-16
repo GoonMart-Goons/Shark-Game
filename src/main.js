@@ -138,6 +138,8 @@ function addKeyListener(){
 const onKeyDown = function(event) {
     switch (event.code) {
         case 'ArrowUp':
+            playBackgroundMusic()
+            playBite()
         case 'KeyW':
             movementArr[0] = true
             break
@@ -154,8 +156,7 @@ const onKeyDown = function(event) {
             movementArr[3] = true
             break
     }
-    playBackgroundMusic()
-    //playBite()
+    
 }
 //When you let go of the keys
 const onKeyUp = function(event) {

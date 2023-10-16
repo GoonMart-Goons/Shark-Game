@@ -2,18 +2,17 @@
 
 import * as THREE from 'three';
 const audioLoader = new THREE.AudioLoader();
-const audioLoaderShort = new THREE.AudioLoader();
+//const audioLoaderShort = new THREE.AudioLoader();
 const listener = new THREE.AudioListener();
-const listenerShort = new THREE.AudioListener();
+//const listenerShort = new THREE.AudioListener();
 const music = new THREE.Audio(listener);
 const underwaterEffect = new THREE.Audio(listener);
 const bite = new THREE.Audio(listener);
-const button = document.getElementById("startGame");
 
 //loads sound into audio loader
 export function addSounds(camera){
     camera.add(listener);
-    camera.add(listenerShort);
+    //camera.add(listenerShort);
     audioLoader.load('./sounds/interface.mp3', function(buffer){
         music.setBuffer(buffer);
         music.setLoop(true);
@@ -24,7 +23,7 @@ export function addSounds(camera){
         underwaterEffect.setLoop(true);
         underwaterEffect.setVolume(1.5);      
     });
-    audioLoaderShort.load('./sounds/eating-sound-effect-36186.mp3', function(buffer){
+    audioLoader.load('./sounds/eating-sound-effect-36186.mp3', function(buffer){
         bite.setBuffer(buffer);
         bite.setLoop(false);
         bite.setVolume(1);

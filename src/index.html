@@ -207,6 +207,16 @@
                     // Hide current page
                     document.getElementById('career').style.display = 'none';
                 });
+                document.getElementById('sound-on').addEventListener('click', () => {
+                    localStorage.setItem("soundOn", "true")
+					var soundOn = localStorage.getItem("soundOn")
+					console.log(soundOn)
+                });
+				document.getElementById('sound-off').addEventListener('click', () => {
+                    localStorage.setItem("soundOn", "false")
+					var soundOn = localStorage.getItem("soundOn")
+					console.log(soundOn)
+                });
             </script>
 	</body>
 </html>

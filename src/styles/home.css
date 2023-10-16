@@ -1,7 +1,7 @@
 body { 
     margin: 0;
-    
-    font-family: 'Grechen Fuemen', cursive;}
+    font-family: 'Grechen Fuemen', cursive;
+}
 
 .landing-logo{
     position: relative;
@@ -32,7 +32,18 @@ body {
     left: 0;
     width: 100%;
     height: 100%;
-    background-color: rgba(6, 6, 94, 0.4); 
+    background-color: rgba(6, 6, 94, 0.2); 
+    z-index: 1;
+  } 
+
+  #settings::before, #credits::before,  #howTo::before, #career::before{
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(33, 151, 187, 0.514); 
     z-index: 1;
   } 
   
@@ -76,7 +87,7 @@ body {
     color: transparent;
   }
   
-  .home-head2{
+  #settingsBtn, #howToBtn, #careerBtn, #creditsBtn{
     position: relative;
     text-decoration: none;
     color: rgb(255, 255, 255);
@@ -89,6 +100,8 @@ body {
     font-size: 20px;
     font-weight: bold;
     font-family: 'Architects Daughter', cursive;
+    z-index: 2;
+    cursor: pointer;
   }
 
   #startButton, #settingsButton{
@@ -107,3 +120,121 @@ body {
     margin: 20px;
     font-family: 'Architects Daughter', cursive;
   }
+
+  #settingsBack, #howToBack, #careerBack, #creditsBack{
+    position: relative;
+    background-color: rgba(245, 241, 1, 0.6);
+    color: white;
+    font-size: 20px;
+    padding: 10px 15px;
+    border: rgb(6, 15, 99) solid 2px;
+    cursor: pointer;
+    border-radius: 35px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+    z-index: 2;
+    margin: 10px;
+    margin-left: 13%;
+    margin-top: 5%;
+    font-family: 'Architects Daughter', cursive;
+
+  }
+
+  .page-head{
+    text-align: center;
+    justify-content: center;
+    text-decoration: none;
+    color: #000080;
+    position: relative;
+    font-size: 80px;
+    text-align: center;
+    padding: 0;
+    margin: 20px;
+    margin-top: 10px;
+    background-image: linear-gradient(45deg, rgb(36, 196, 44) 30%,yellow 60%);
+    background-clip: text;
+    -webkit-background-clip: text; /* For webkit browsers (e.g., Safari) */
+    color: transparent;
+    z-index: 2;
+  }
+
+  .page-text, .credits-text, .howto-text{
+    position: relative;
+    font-size: 40px;
+    color: black;
+    margin: 20px;
+    z-index: 2;
+    text-align: center;
+    justify-content: center;
+    font-family: 'Architects Daughter', cursive;
+    font-weight: bold;
+  }
+
+  .credits-text{
+    font-size: 25px;
+  }
+
+  .howto-text{
+    font-size: 25px;
+    text-align: left;
+    margin-left: 28%;
+  }
+
+  .levels{
+    text-align: center;
+    justify-content: center;
+  }
+
+  .unlocked, .locked{
+    position: relative;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    border: rgba(255, 255, 0, 0.705) solid 2px;
+    border-radius: 15px;
+    padding: 24px 20px;
+    margin: 10px;
+    display: inline-block;
+    font-size: 25px;
+    font-weight: bold;
+    font-family: 'Architects Daughter', cursive;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  .unlocked{
+    background-color: rgba(1, 245, 164, 0.829);;
+  }
+
+  .locked{
+    background-color: rgba(245, 1, 1, 0.829);;
+  }
+  
+
+  #sound-on, #sound-off {
+    text-decoration: none;
+    position: relative;
+    text-decoration: none;
+    color: rgb(255, 255, 255);
+    border: yellow solid 2px;
+    border-radius: 25px;
+    padding: 12px 10px;
+    margin: 10px;
+    font-size: 20px;
+    font-weight: bold;
+    font-family: 'Architects Daughter', cursive;
+    z-index: 2;
+    cursor: pointer;
+  }
+
+  #sound-off {
+    background-color: red;
+    border-radius: 45px;
+  }
+
+    #sound-on {
+        background-color: green;
+        border-radius: 65px;
+        padding: 10px 10px;
+    }
+

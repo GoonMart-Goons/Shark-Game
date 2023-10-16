@@ -5,6 +5,8 @@ var maxHealth = 100; // Maximum health
 var playerHunger = 100; // Player's actual hunger level
 var maxHunger = 100; 
 
+var score = 0;
+
 const canvasHealth = document.getElementById("healthBar");
 const contextHealth = canvasHealth.getContext("2d");
 
@@ -33,7 +35,7 @@ export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     const healthWidth = (health / maxHealth) * canvas.width;
     context.fillStyle = colour;
     context.fillRect(0, 0, healthWidth, canvasHealth.height);
-  }
+}
   
 export function setTextStyle(context){
     context.fillStyle = "white";
@@ -41,7 +43,41 @@ export function setTextStyle(context){
     context.strokeStyle = "white";
 }
 
-export function drawScore(score){
+export function incPlayerHealth(health){
+    playerHealth += health
+
+    if(playerHealth > maxHealth)
+        playerHealth = 100
+}
+
+export function incPlayerHunger(hunger){
+    if(playerHealth + hunger > maxHealth){
+        playerHealth = maxHealth
+        playerHunger += hunger
+    } 
+    else if(playerHealth < maxHealth)
+        incPlayerHealth(hunger)
+    else
+        playerHunger += hunger
+
+    if(playerHunger > maxHunger)
+        playerHunger = 100
+}
+
+export function incScore(points){
+    score += points
+}
+
+export function getPlayerHealth(){
+    return playerHealth
+}
+
+export function getPlayerHunger(){
+    return playerHunger
+}
+
+export function drawScore(){
+    contextScore.clearRect(0, 0, canvasScore.width, canvasScore.height)
     setTextStyle(contextScore);
     const stringScore = "Score: "+ score;
     contextScore.strokeText(stringScore, 10, 20);
@@ -60,7 +96,7 @@ export function setBarNumber(){
     if(playerHunger > 0){
         playerHunger = Math.max(0, playerHunger - hungerDecay);
     }
-    if(playerHunger <= 0){
+    else if(playerHunger <= 0){
         playerHealth = Math.max(0, playerHealth - healthDecay);
     }
     //console.log(playerHunger);
@@ -101,4 +137,5 @@ export function initHUD(){
     canvasTime.style.top = "10px";
     canvasTime.style.right = "20px";
 
+    drawScore(0)
 }

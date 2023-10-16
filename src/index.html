@@ -3,19 +3,203 @@
 	<head>
 		<meta charset="utf-8">
 		<title>Shark Attack</title>
-		<style>
-			body { margin: 0; }
-		</style>
+        <link rel = "stylesheet" href="./styles/home.css">
+        <link rel="preconnect" href="https://fonts.googleapis.com">
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&display=swap" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css2?family=Architects+Daughter&family=Grechen+Fuemen&display=swap" rel="stylesheet">
 	</head>
+
 	<body>
-		<div class = "hud-display">
-			<canvas id="score" width="200" height="30"></canvas>
-			<canvas id="healthBar" width="500%" height="30"></canvas>
-			<canvas id="time" width="200" height="30"></canvas>
-		</div>
-		<canvas id="hungerBar" width="250%" height="30"></canvas>
-		<button id="startGame">Play Music</button>
-		<button id="settings_button">Settings</button>
-		<script type="module" src="main.js"></script>
+            <!--display home page -->
+             <div id="app" class = "landing"> 
+                <div class="landing-background">
+                    <img src=./assets/bg1.gif alt="Background GIF" />
+                   </div>
+                
+                   <div class="home-heads">
+                       <h1 class="home-head1" id="home-h1">SHARK ATTACK</h1>
+                       <button id="startButton">START GAME</button><br/>	
+                       <button id="howToBtn">How to Play</button><br/>
+                       <button id="careerBtn" class="home-heads2">Career</button><br/>
+                       <button id="settingsBtn" class="home-heads2">Settings</button><br/>
+                       <button id="creditsBtn" class="home-heads2">Credits</button><br/>	
+                        
+                    </div>
+            </div>
+            
+            <!-- display game -->
+            <div id="game-container" style="display: none;">
+                <div class = "hud-display">
+                    <canvas id="score" width="200" height="30"></canvas>
+                    <canvas id="healthBar" width="500%" height="30"></canvas>
+                    <canvas id="time" width="200" height="30"></canvas>
+                </div>
+                <canvas id="hungerBar" width="250%" height="30"></canvas>
+            </div>
+
+            <!-- display settings -->
+            <div id="settings" style="display: none;">
+                <div class="landing-background">
+                    <img src=./assets/bg2.gif alt="Background GIF" />
+                   </div>
+
+                <button id="settingsBack">BACK</button>
+
+                <h1 class="page-head">Settings</h1>
+                <p class="page-text">Music
+				<button id="sound-on"> On</button>
+				<button id="sound-off"> Off</button></p>
+                <p class="page-text">Effects
+				<button id="sound-on"> On</button>
+				<button id="sound-off"> Off</button> </p>
+				
+				<script type="module" src="basicSettings.js"></script>
+			</div>
+
+            <!-- display career -->
+            <div id="career" style="display: none;">
+                <div class="landing-background">
+                    <img src=./assets/bg2.gif alt="Background GIF" />
+                </div>
+                <button id="careerBack">BACK</button>
+
+                <h1 class="page-head">Career</h1>
+
+                <div class="levels">
+                    <button class="unlocked">01</button>
+                    <button class="unlocked">02</button>
+                    <button class="unlocked">03</button>
+                    <button class="locked">04</button> <br/>
+                    <button class="locked">05</button>
+                    <button class="locked">06</button>
+                    <button class="locked">07</button>
+                    <button class="locked">08</button> <br/>
+                    <button class="locked">09</button>
+                    <button class="locked">10</button>
+                    <button class="locked">11</button>
+                    <button class="locked">12</button>
+
+
+
+                </div>
+
+				
+				<script type="module" src="basicSettings.js"></script>
+			</div>
+
+            <!-- display How To Play -->
+            <div id="howTo" style="display: none;">
+                <div class="landing-background">
+                    <img src=./assets/bg2.gif alt="Background GIF" />
+                   </div>
+                <button id="howToBack">BACK</button>
+                <h1 class="page-head">How To Play</h1>
+
+                <p class="howto-text">
+                    1. Press the 'START GAME' button on the main menu. <br/>
+                    2. Use the arrow keys to move the shark around the screen. <br/>
+                    3. Eat the fish to gain points and increase your health. <br/>
+                    4. Avoid the mines and the jellyfish. <br/>
+                    5. If you run out of health, you lose. <br/>
+                    6. If you run out of hunger, you lose. <br/>
+                    7. If you run out of time, you lose. <br/>
+                    8. If you reach 1000 points, you win. <br/>
+
+                </p>
+				
+				<script type="module" src="basicSettings.js"></script>
+			</div>
+
+            <!-- display credits -->
+            <div id="credits" style="display: none;">
+                <div class="landing-background">
+                    <img src=./assets/bg2.gif alt="Background GIF" />
+                   </div>
+                   
+                   <button id="creditsBack">BACK</button>
+
+                   <h1 class="page-head">Credits</h1>
+                   <p class="credits-text"> Grechen Fuemen by Robert Leuschke, Google Fonts.<br/> 
+                    Architects Daughter by Kimberly Geswein, Google Fonts.<br/>
+                    Shark fin by RoboLamp Art, Dribbble.<br/>
+                     Hungry Shark In Game Conceptual Work by Dan Francis</p>
+
+				
+				<script type="module" src="basicSettings.js"></script>
+			</div>
+
+            <script>
+                // Check if we should display the game page
+                document.getElementById('startButton').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show the game container
+                    document.getElementById('game-container').style.display = 'block';
+        
+                    // Load your Three.js game script dynamically
+                    const script = document.createElement('script');
+                    script.type = 'module';
+                    script.src = '/main.js';
+                    document.body.appendChild(script);
+                });
+
+                document.getElementById('settingsBtn').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show settings
+                    document.getElementById('settings').style.display = 'block';
+                });
+
+                document.getElementById('careerBtn').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show settings
+                    document.getElementById('career').style.display = 'block';
+                });
+
+                document.getElementById('howToBtn').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show settings
+                    document.getElementById('howTo').style.display = 'block';
+                });
+
+                document.getElementById('creditsBtn').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('app').style.display = 'none';
+                    // Show settings
+                    document.getElementById('credits').style.display = 'block';
+                });
+
+				document.getElementById('settingsBack').addEventListener('click', () => {
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                    // Hide current page
+                    document.getElementById('settings').style.display = 'none';
+                });
+
+                document.getElementById('creditsBack').addEventListener('click', () => {
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                    // Hide current page
+                    document.getElementById('credits').style.display = 'none';
+                });
+
+                document.getElementById('howToBack').addEventListener('click', () => {
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                    // Hide current page
+                    document.getElementById('howTo').style.display = 'none';
+                });
+
+                document.getElementById('careerBack').addEventListener('click', () => {
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                    // Hide current page
+                    document.getElementById('career').style.display = 'none';
+                });
+            </script>
+
 	</body>
 </html>

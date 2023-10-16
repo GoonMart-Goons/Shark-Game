@@ -13,17 +13,17 @@ const bite = new THREE.Audio(listener);
 export function addSounds(camera){
     camera.add(listener);
     //camera.add(listenerShort);
-    audioLoader.load('../sounds/interface.mp3', function(buffer){
+    audioLoader.load('./sounds/interface.mp3', function(buffer){
         music.setBuffer(buffer);
         music.setLoop(true);
         music.setVolume(0.4);
     });
-    audioLoader.load('../sounds/underwater-ambience-6201.mp3', function(buffer){
+    audioLoader.load('./sounds/underwater-ambience-6201.mp3', function(buffer){
         underwaterEffect.setBuffer(buffer);
         underwaterEffect.setLoop(true);
         underwaterEffect.setVolume(1.5);      
     });
-    audioLoader.load('../sounds/eating-sound-effect-36186.mp3', function(buffer){
+    audioLoader.load('./sounds/eating-sound-effect-36186.mp3', function(buffer){
         bite.setBuffer(buffer);
         bite.setLoop(false);
         bite.setVolume(1);
@@ -51,7 +51,7 @@ export function turnSoundOn(){
 //code that plays bite sound
 export function playBite(){
     populateNullLocalStorage()
-    // console.log("Bite happening")
+    console.log("Bite happening")
     var soundOn = localStorage.getItem("soundOn")
     if(soundOn==="true"){
         bite.play();

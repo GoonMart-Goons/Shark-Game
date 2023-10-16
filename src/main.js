@@ -3,7 +3,6 @@ import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
 
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
-import { playBackgroundMusic, playBite, addSounds} from './sound';
 
 import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
@@ -132,7 +131,7 @@ function init(){
 
     //Add sounds to game
     addSounds(camera)
-    playBackgroundMusic()
+    //playBackgroundMusic()
 
     //Init fish
     initFish(fishArray, numFish)
@@ -157,7 +156,6 @@ const onKeyDown = function(event) {
     switch (event.code) {
         case 'ArrowUp':
             playBackgroundMusic()
-            playBite()
         case 'KeyW':
             movementArr[0] = true
             break

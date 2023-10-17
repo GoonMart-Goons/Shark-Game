@@ -211,7 +211,7 @@ body {
   }
   
 
-  #sound-on, #sound-off {
+  #music-on, #music-off, #fx-on, #fx-off {
     text-decoration: none;
     position: relative;
     text-decoration: none;
@@ -227,14 +227,14 @@ body {
     cursor: pointer;
   }
 
-  #sound-off {
+  #music-off, #fx-off {
     background-color: red;
     border-radius: 45px;
   }
 
-    #sound-on {
-        background-color: green;
-        border-radius: 65px;
-        padding: 10px 10px;
-    }
+  #music-on, #fx-on {
+      background-color: green;
+      border-radius: 65px;
+      padding: 10px 10px;
+  }
 

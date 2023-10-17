@@ -5,18 +5,21 @@ import * as THREE from 'three';
 const planeX = 1000;
 const planeY = 1000;
 const loader = new THREE.TextureLoader();
-const height = loader.load('../assets/images/map.jpg');
+const height = loader.load('../assets/images/noisemap.png');
 const texture = loader.load('../assets/images/mountain.jpg');
-const alpha = loader.load('../assets/images/map.jpg');
+const alpha = loader.load('../assets/images/noisemap.png');
+
+//Debug
+//const gui = new dat.GUI();
 
 //Make a plane [ground]
 export function addPlane(){
-    const groundGeo = new THREE.PlaneGeometry(planeX, planeY, 64, 64);
+    const groundGeo = new THREE.PlaneGeometry(planeX, planeY, 100, 100);
     const material = new THREE.MeshStandardMaterial({
         color: 'brown',
         map: texture,
         displacementMap: height,
-        displacementScale: 30,
+        displacementScale: 50,
         alphaMap: alpha,
         transparent: true,
         opacity: 3

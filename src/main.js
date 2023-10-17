@@ -120,6 +120,8 @@ function init(){
     // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
 
     window.addEventListener('resize', onWindowResize)
+
+
     addKeyListener()
 
     //HUD elements
@@ -128,7 +130,7 @@ function init(){
 
     //Add sounds to game
     addSounds(camera)
-    playBackgroundMusic()
+    
 
     //Init fish
     initFish(fishArray, numFish)
@@ -145,11 +147,15 @@ function init(){
 function addKeyListener(){
     window.addEventListener('keydown', onKeyDown)
     window.addEventListener('keyup', onKeyUp)
+
+    //MISO's code
+    window.addEventListener('g', playBite)
 }
 
 //Handles player movement on key events
 //When you press the keys
 const onKeyDown = function(event) {
+    playBackgroundMusic()
     switch (event.code) {
         case 'ArrowUp':
         case 'KeyW':

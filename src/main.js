@@ -7,11 +7,12 @@ import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
 import { updateScore, updateHunger, updateHealth, activeGame} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds } from './components/sound';
+import { addSkyBox } from './components/skybox';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
-let camera, scene, renderer, controls, oceanFloor, player, fish
-let world, playerHB, fishHB
+let camera, scene, renderer, controls
+let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
@@ -34,14 +35,14 @@ function init(){
     world = new CANNON.World()
 
     //Camera init & settings
-    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 1000)
+    camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000)
     // camera.position.y = 10
     const gameContainer = document.getElementById('game-container');
 
     //Scene init
     scene = new THREE.Scene()
     scene.background = new THREE.Color(0xaaccff)
-    scene.fog = new THREE.Fog(0x1010ff, 0, 750)
+    scene.fog = new THREE.Fog(0x99bbff, 0, 750)
 
     //Renderer init
     renderer = new THREE.WebGLRenderer()
@@ -50,7 +51,7 @@ function init(){
     gameContainer.appendChild(renderer.domElement)
 
     //Light source
-    const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 10)
+    const light = new THREE.HemisphereLight(0xeeeeff, 0x777788, 20)
     light.position.set(0.5, 1, 0.75)
     scene.add(light)
 
@@ -107,9 +108,13 @@ function init(){
 
     //Ocean floor
     oceanFloor = addPlane()
-    oceanFloor.position.y = -150
+    oceanFloor.position.y = -250
     oceanFloor.rotation.set(162, 0, 0)
     scene.add(oceanFloor)
+
+    //Skybox
+    skyBox = addSkyBox()
+    scene.add(skyBox)
 
     //For debugging
     // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
@@ -239,7 +244,21 @@ function animate() {
     }
     prevTime = time
 
-    playerHB.position.copy(controls.getObject().position)
+    if(controls.getObject().position.x > 450)
+        controls.getObject().position.x = 450
+    if(controls.getObject().position.x < -450)
+        controls.getObject().position.x = -450
+
+    if(controls.getObject().position.y > 175)
+        controls.getObject().position.y = 175
+    if(controls.getObject().position.y < -175)
+        controls.getObject().position.y = -175
+
+    if(controls.getObject().position.z > 450)
+        controls.getObject().position.z = 450
+    if(controls.getObject().position.z < -450)
+        controls.getObject().position.z = -450
+    playerHB.position.copy(controls.getObject().position) //Player hit box
 
     //Move fish
     animateFish(fishArray)

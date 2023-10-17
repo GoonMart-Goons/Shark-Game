@@ -101,7 +101,25 @@ export function setBarNumber(){
     }
     //console.log(playerHunger);
     drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");
-    drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange");  
+    drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange"); 
+    
+    if(playerHealth <= 0){
+        showGameOverScreen(endTime)
+        return
+    }
+}
+
+function showGameOverScreen(endTime){
+    //Hide game canvas
+    document.getElementById('game-container').style.display = 'none'
+
+    //Game over sceen 
+    const gameOverScreen = document.getElementById('game-over')
+    const gameOverScore = document.getElementById('game-over-score')
+    //Display "stats"
+    gameOverScore.textContent = score; // Set the final score
+    //Show game over
+    gameOverScreen.style.display = 'block'
 }
 
 export function updateCountdown() {

@@ -24,8 +24,8 @@ var endTime;
 
 var gameIsActive = true
 
-const hungerDecay = 0.1  //0.05
-const healthDecay = 0.1 //0.025
+const hungerDecay = 0.05  //0.05
+const healthDecay = 0.025 //0.025
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -142,7 +142,7 @@ function showGameOverScreen(text){
 }
 
 // Add an event listener for the main menu button
-document.getElementById('main-menu-button').addEventListener('click', () => {
+document.getElementById('restart-button').addEventListener('click', () => {
     // Hide the game over screen
     document.getElementById('game-over').style.display = 'none';
 

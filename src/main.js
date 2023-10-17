@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
+import * as YUKA from 'yuka'; // Import the YUKA library
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 
 import { setBarNumber, drawTime, initHUD } from './components/hud';
-import { addPlane } from './components/terrain';
+import { addPlane, planeGrid } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
 import { updateScore} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds } from './components/sound';
@@ -17,6 +20,7 @@ let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
 let fishHBArray = []
+let vehicleArray = []// vehicle array
 const numFish = 20; // Number of fish in the environment
 
 let prevTime = performance.now();
@@ -25,10 +29,19 @@ const direction = new THREE.Vector3();
 const vertex = new THREE.Vector3();
 const col = new THREE.Color();
 
+//assists with animations
+let entityManager = new YUKA.EntityManager();
+let time2 = new YUKA.Time()
+
 
 // ================================================================================================
 
 // F U N C T I O N S ==============================================================================
+//assists with animations
+function sync (entity, renderComponent) {
+    renderComponent.matrix.copy(entity.worldMatrix);
+}
+
 //Initialize scene
 function init(){
     //CANNON world for physics
@@ -90,7 +103,8 @@ function init(){
             const fishIdx = fishHBArray.indexOf(event.body)
             updateScore('smallFish')
             playBite()
-            fishArray[fishIdx].material.color.set('red')
+            handleFishEaten(fishIdx)
+            // fishArray[fishIdx].material.color.set('red')
         }
     }) 
 
@@ -99,12 +113,14 @@ function init(){
     world.addBody(playerHB)
 
     //Add fish to random parts of the world
-    fish = addCube()
-    fish.position.set(3, 2, 5)
-    fishHB = addCubeHB(fish.position)
-    fish.material.color.set('green')
-    scene.add(fish)
-    world.addBody(fishHB)
+
+    //Test fish
+    // fish = addCube()
+    // fish.position.set(3, 2, 5)
+    // fishHB = addCubeHB(fish.position)
+    // fish.material.color.set('green')
+    // scene.add(fish)
+    // world.addBody(fishHB)
 
     //Ocean floor
     oceanFloor = addPlane()
@@ -133,14 +149,47 @@ function init(){
     
 
     //Init fish
-    initFish(fishArray, numFish)
+    // initFish(fishArray, numFish)
 
-    for(var i = 0; i < numFish; i++){
-        scene.add(fishArray[i])
-        const fshHB = addCubeHB(fishArray[i].position)
-        fishHBArray.push(fshHB)
-        world.addBody(fishHBArray[i])
-    }
+    //Init fish
+    const loader = new GLTFLoader ();
+    let mixer;
+    loader.load(' ./assets/fish.glb', function (glb){
+        const model = glb.scene;
+        const clips = glb.animations;
+
+        for (let i = 0; i < numFish; i++) {
+            const fishClone = SkeletonUtils.clone(model);
+            fishArray.push(fishClone);
+        }
+        for(var i = 0; i < numFish; i++){
+            scene.add(fishArray[i])
+            const fshHB = addCubeHB(fishArray[i].position)
+            fishHBArray.push(fshHB)
+            world.addBody(fishHBArray[i])
+
+
+            //attempt to animate fish in world
+            vehicleArray.push(new YUKA.Vehicle());
+            vehicleArray[i].setRenderComponent(fishArray[i], sync) ;
+
+            vehicleArray[i].maxSpeed = 5; // Change 5 to your desired speed
+
+            const wanderBehavior = new YUKA.WanderBehavior();
+            wanderBehavior.weight = 0.7; // Increase the weight to make the behavior more prominent
+            vehicleArray[i].steering.add(wanderBehavior);
+
+
+            entityManager.add(vehicleArray[i]) ;
+            //vehicleArray[i].rotation.fromEuler(0, 2 * Math.PI * Math.random(),0);
+            vehicleArray[i].fishRotation = new YUKA.Quaternion();
+            vehicleArray[i].position.x=Math.random() * 1000 - 500;
+            vehicleArray[i].position.y=Math.random() * 1000 - 500;
+            vehicleArray[i].position.z=Math.random() * 200 - 150;
+
+        }
+
+    });
 }
 
 //Allows code to listen for keyboard input
@@ -199,6 +248,21 @@ const onKeyUp = function(event) {
 
 document.addEventListener('keydown', onKeyDown)
 document.addEventListener('keyup', onKeyUp) 
+
+function handleFishEaten(eatenFishIndex) {
+    // Remove the eaten fish from the scene
+
+    // Respawn the eaten fish in a random location
+    const newX = Math.random() * 200 - 100;
+    const newY = Math.random() * 200 - 100;
+    const newZ = Math.random() * 200 - 100;
+
+    // Update the fish's position
+    vehicleArray[eatenFishIndex].position.set(newX, newY, newZ);
+
+    // Reset the fish's rotation
+    vehicleArray[eatenFishIndex].rotation.set(0, 0, 0);
+}
 
 function addCube(){
     const geom = new THREE.BoxGeometry(1, 1, 1)
@@ -267,7 +331,14 @@ function animate() {
     playerHB.position.copy(controls.getObject().position) //Player hit box
 
     //Move fish
-    animateFish(fishArray)
+    const delta2 = time2.update().getDelta();
+    for (let i = 0; i < numFish; i++) {
+        vehicleArray[i].update(delta2); // Update the YUKA vehicle
+        fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
+        // Update the fish's rotation to match the YUKA vehicle's orientation
+        fishArray[i].quaternion.copy(vehicleArray[i].rotation);
+        fishHBArray[i].position.copy(fishArray[i].position)
+    }
 
     world.step(1 / 60)
 

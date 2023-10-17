@@ -100,7 +100,7 @@ export function setBarNumber(){
         if(playerHunger > 0){
             playerHunger = Math.max(0, playerHunger - hungerDecay);
         }
-        else if(playerHunger <= 0){
+        if(playerHunger <= 0){
             playerHealth = Math.max(0, playerHealth - healthDecay);
         }
         //console.log(playerHunger);

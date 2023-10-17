@@ -86,10 +86,17 @@
 			</div>
 
             <!-- Game over screen -->
-            <div id="game-over" style="display: none;">
-                <h1> <span id="game-over-text"></span></h1>
-                <p>Score: <span id="game-over-score">0</span></p>
-                <button id="main-menu-button">Main Menu</button>
+            <div id="game-over" class= "over-screen" style="display: none;">
+                <div class="landing-background">
+                    <img src=./assets/bg2.gif alt="Background GIF" />
+                   </div>
+
+                   <button id="gameOverBack">BACK</button>
+
+                
+                <h1 class="game-over-head">Game Over</h1>
+                <p class="score">Score: <span id="game-over-score">0</span></p>
+                <button class="restart" id="restart-button">Main Menu</button>
             </div>
 
             <!-- display How To Play -->
@@ -201,6 +208,13 @@
                     document.getElementById('app').style.display = 'block';
                     // Hide current page
                     document.getElementById('howTo').style.display = 'none';
+                });
+
+                document.getElementById('gameOverBack').addEventListener('click', () => {
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                    // Hide current page
+                    document.getElementById('game-over').style.display = 'none';
                 });
 
                 document.getElementById('careerBack').addEventListener('click', () => {

@@ -21,8 +21,8 @@ const contextHunger = canvasHunger.getContext("2d");
 
 const endTime = new Date().getTime() + 5 * 60 * 1000;
 
-const hungerDecay = 0.5
-const healthDecay = 0.5
+const hungerDecay = 0.05
+const healthDecay = 0.025
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);

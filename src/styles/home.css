@@ -249,13 +249,13 @@ body {
       padding: 10px 10px;
   }
 
-  .over-screen{
+  #gameOver{
     text-align: center;
     justify-content: center;
     z-index: 2;
   }
 
-  .score, .restart{
+  .score{
     text-align: center;
     justify-content: center;
     position: relative;
@@ -267,6 +267,11 @@ body {
   }
 
   #restart-button{
+    text-align: center;
+    justify-content: center;
+    z-index: 2;
+    font-family: 'Architects Daughter', cursive;
+    font-weight: bold;
     position: relative;
     text-decoration: none;
     color: rgb(255, 255, 255);

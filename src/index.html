@@ -87,9 +87,9 @@
 
             <!-- Game over screen -->
             <div id="game-over" style="display: none;">
-                <h1>Game Over</h1>
+                <h1> <span id="game-over-text"></span></h1>
                 <p>Score: <span id="game-over-score">0</span></p>
-                <button id="restart-button">Main Menu</button>
+                <button id="main-menu-button">Main Menu</button>
             </div>
 
             <!-- display How To Play -->
@@ -108,7 +108,7 @@
                     5. If you run out of health, you lose. <br/>
                     6. If you run out of hunger, you lose. <br/>
                     7. If you run out of time, you lose. <br/>
-                    8. If you reach 1000 points, you win. <br/>
+                    8. If you reach 500 points, you win. <br/>
 
                 </p>
 				
@@ -127,7 +127,7 @@
                    <p class="credits-text"> Grechen Fuemen by Robert Leuschke, Google Fonts.<br/> 
                     Architects Daughter by Kimberly Geswein, Google Fonts.<br/>
                     Shark fin by RoboLamp Art, Dribbble.<br/>
-                     Hungry Shark In Game Conceptual Work by Dan Francis</p>
+                    Hungry Shark In Game Conceptual Work by Dan Francis</p>
 
 				
 				<script type="module" src="basicSettings.js"></script>
@@ -141,11 +141,17 @@
                     // Show the game container
                     document.getElementById('game-container').style.display = 'block';
         
+                    // Remove the existing script element for 'main.js'
+                    const existingScript = document.querySelector('script[src="/main.js"]');
+                    if (existingScript) {
+                        existingScript.remove();
+                    }
+
                     // Load your Three.js game script dynamically
                     const script = document.createElement('script');
                     script.type = 'module';
                     script.src = '/main.js';
-                    document.body.appendChild(script);
+                    document.body.appendChild(script)
                 });
 
                 document.getElementById('settingsBtn').addEventListener('click', () => {

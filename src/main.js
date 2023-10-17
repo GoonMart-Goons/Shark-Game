@@ -2,10 +2,10 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
 
-import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
-import { addPlane, planeGrid } from './components/terrain';
+import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { addPlane } from './components/terrain';
 import { initFish, animateFish } from './components/fish';
-import { updateScore, updateHunger, updateHealth, activeGame} from './components/gameLogic';
+import { updateScore} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds } from './components/sound';
 import { addSkyBox } from './components/skybox';
 

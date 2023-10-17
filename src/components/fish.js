@@ -1,16 +1,17 @@
 import * as THREE from 'three';
-
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 // Function to create a single fish object
+
+
+const loader = new GLTFLoader ();
+loader.load(' ./assets/fish.glb', function (glb){
+    const model = glb. scene;
+});
 export function createFish() {
     const geometry = new THREE.BoxGeometry(5, 5, 5); // Adjust size as needed
     const material = new THREE.MeshPhongMaterial({ color: 0xff0000 }); // Adjust color
     const fish = new THREE.Mesh(geometry, material);
-
-    // Set initial position for the fish with random height
-    const x = Math.random() * 1000 - 500;
-    const z = Math.random() * 1000 - 500;
-    const y = Math.random() * 400 - 150; // Random height
-    fish.position.set(x, y, z);
 
     // Return the fish object
     return fish;

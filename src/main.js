@@ -2,13 +2,15 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { PointerLockControls } from '../modules/PointerLockControls';
 import * as YUKA from 'yuka'; // Import the YUKA library
+import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
+import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';//fish 3d model helper
 
 // Import any other required dependencies here, if any
 
 
 import { setBarNumber, drawTime, initHUD, drawScore } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
-import { initFish, animateFish, updateFish } from './components/fish';
+import { initFish, animateFish} from './components/fish';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -121,30 +123,43 @@ function init(){
     onWindowResize()
 
     //Init fish
-    initFish(fishArray, numFish)
+    const loader = new GLTFLoader ();
+    let mixer;
+    loader.load(' ./assets/fish.glb', function (glb){
+        const model = glb.scene;
+        const clips = glb.animations;
 
-    for(var i = 0; i < numFish; i++){
-        scene.add(fishArray[i])
-        //attempt to animate fish in world
-        vehicleArray.push(new YUKA.Vehicle());
-        vehicleArray[i].setRenderComponent(fishArray[i], sync) ;
-
-        vehicleArray[i].maxSpeed = 5; // Change 5 to your desired speed
-
-        const wanderBehavior = new YUKA.WanderBehavior();
-        wanderBehavior.weight = 1.6; // Increase the weight to make the behavior more prominent
-        vehicleArray[i].steering.add(wanderBehavior);
-
-        entityManager.add(vehicleArray[i]) ;
-        vehicleArray[i].rotation.fromEuler(0, 2 * Math.PI * Math.random(),0);
-        vehicleArray[i].position.x=Math.random() * 1000 - 500;
-        vehicleArray[i].position.y=Math.random() * 1000 - 500;
-        vehicleArray[i].position.z=Math.random() * 400 - 150;;
+        for (let i = 0; i < numFish; i++) {
+            const fishClone = SkeletonUtils.clone(model);
+            fishArray.push(fishClone);
+        }
+        for(var i = 0; i < numFish; i++){
+            scene.add(fishArray[i])
 
 
+            //attempt to animate fish in world
+            vehicleArray.push(new YUKA.Vehicle());
+            vehicleArray[i].setRenderComponent(fishArray[i], sync) ;
 
-        //console.log("check this out:", vehicleArray[i])
-    }
+            vehicleArray[i].maxSpeed = 5; // Change 5 to your desired speed
+
+            const wanderBehavior = new YUKA.WanderBehavior();
+            wanderBehavior.weight = 0.7; // Increase the weight to make the behavior more prominent
+            vehicleArray[i].steering.add(wanderBehavior);
+
+
+            entityManager.add(vehicleArray[i]) ;
+            //vehicleArray[i].rotation.fromEuler(0, 2 * Math.PI * Math.random(),0);
+            vehicleArray[i].fishRotation = new YUKA.Quaternion();
+            vehicleArray[i].position.x=Math.random() * 1000 - 500;
+            vehicleArray[i].position.y=Math.random() * 1000 - 500;
+            vehicleArray[i].position.z=Math.random() * 200 - 150;
+
+        }
+
+    });
+
+
 }
 
 //Allows code to listen for keyboard input
@@ -253,14 +268,14 @@ function animate() {
     playerHB.position.copy(controls.getObject().position)
 
     //Move fish
-    //animateFish(fishArray)
-    // const delta = time2.update().getDelta();
-    // entityManager.update(delta);
-    // console.log("hey over here", fishArray[0].position);
     const delta2 = time2.update().getDelta();
     for (let i = 0; i < numFish; i++) {
         vehicleArray[i].update(delta2); // Update the YUKA vehicle
         fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
+        // Update the fish's rotation to match the YUKA vehicle's orientation
+        fishArray[i].quaternion.copy(vehicleArray[i].rotation);
+
+
     }
 
 

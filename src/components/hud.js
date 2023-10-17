@@ -19,10 +19,13 @@ const contextTime = canvasTime.getContext("2d");
 const canvasHunger = document.getElementById("hungerBar");
 const contextHunger = canvasHunger.getContext("2d");
 
-const endTime = new Date().getTime() + 5 * 60 * 1000;
+const maxGameTime = 5 //minutes
+var endTime;
 
-const hungerDecay = 0.05
-const healthDecay = 0.025
+var gameIsActive = true
+
+const hungerDecay = 0.05  //0.05
+const healthDecay = 0.025 //0.025
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);
@@ -93,52 +96,98 @@ export function drawTime(){
 }
 
 export function setBarNumber(){
-    if(playerHunger > 0){
-        playerHunger = Math.max(0, playerHunger - hungerDecay);
-    }
-    else if(playerHunger <= 0){
-        playerHealth = Math.max(0, playerHealth - healthDecay);
-    }
-    //console.log(playerHunger);
-    drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");
-    drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange"); 
-    
-    if(playerHealth <= 0){
-        showGameOverScreen(endTime)
-        return
+    if(true){
+        if(playerHunger > 0){
+            playerHunger = Math.max(0, playerHunger - hungerDecay);
+        }
+        if(playerHunger <= 0){
+            playerHealth = Math.max(0, playerHealth - healthDecay);
+        }
+        //console.log(playerHunger);
+        drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");
+        drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange"); 
+        
+        if(playerHealth <= 0){
+            showGameOverScreen('Game Over, Ran out of health')
+            return
+        }
+        const currentTime = new Date().getTime();
+        if(endTime - currentTime <= 0){
+            showGameOverScreen('Game Over, Ran out of time')
+            return
+        }
+        if(score >= 200){
+            showGameOverScreen('You Win!')
+            return
+        }
     }
 }
 
-function showGameOverScreen(endTime){
+function showGameOverScreen(text){
+    //Deactivate game
+    gameIsActive = false
+
     //Hide game canvas
     document.getElementById('game-container').style.display = 'none'
 
     //Game over sceen 
     const gameOverScreen = document.getElementById('game-over')
+    const gameOverText = document.getElementById('game-over-text')
     const gameOverScore = document.getElementById('game-over-score')
     //Display "stats"
+    gameOverText.textContent = text
     gameOverScore.textContent = score; // Set the final score
     //Show game over
     gameOverScreen.style.display = 'block'
 }
 
-export function updateCountdown() {
-    const currentTime = new Date().getTime();
-    const timeRemaining = endTime - currentTime;
+// Add an event listener for the main menu button
+document.getElementById('restart-button').addEventListener('click', () => {
+    // Hide the game over screen
+    document.getElementById('game-over').style.display = 'none';
 
-    if (timeRemaining <= 0) {
-      clearInterval(interval);
-      return 'Countdown expired!';
-      //document.getElementById('time').innerHTML = 'Countdown expired!';
-    } else {
-      const minutes = Math.floor((timeRemaining / 1000) / 60);
-      const seconds = Math.floor((timeRemaining / 1000) % 60);
-      `Time remaining: ${minutes} minutes ${seconds} seconds`
-      return `Time: 0${minutes}: ${seconds}`;
+    // Reset the game variables (e.g., player health, hunger, score, and time)
+    playerHealth = maxHealth;
+    playerHunger = maxHunger;
+    score = 0;
+    // Reset other game-related variables as needed
+
+    // Display the main menu
+    document.getElementById('app').style.display = 'block';
+
+    // Hide the game container (if it's visible)
+    document.getElementById('game-container').style.display = 'none';
+
+    // You may need to perform any additional cleanup or logic to return to the main menu state
+});
+
+
+export function updateCountdown() {
+    if(gameIsActive){
+        const currentTime = new Date().getTime();
+        const timeRemaining = endTime - currentTime;
+    
+        if (timeRemaining <= 0) {
+          clearInterval(interval);
+          return 'Countdown expired!';
+          //document.getElementById('time').innerHTML = 'Countdown expired!';
+        } else {
+          const minutes = Math.floor((timeRemaining / 1000) / 60);
+          const seconds = Math.floor((timeRemaining / 1000) % 60);
+          `Time remaining: ${minutes} minutes ${seconds} seconds`
+          return `Time: 0${minutes}: ${seconds}`;
+        }
     }
 }
 
 export function initHUD(){
+    gameIsActive = true
+
+    playerHealth = maxHealth
+    playerHunger = maxHunger
+    endTime = new Date().getTime() + maxGameTime * 60 * 1000;
+    score = 0
+
     canvasHealth.style.position = "absolute";
     canvasHealth.style.top = "10px";
     canvasHealth.style.left = "200px";

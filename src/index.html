@@ -94,7 +94,7 @@
                    <button id="gameOverBack">BACK</button>
 
                 
-                <h1 class="game-over-head">Game Over</h1>
+                <h1 class="game-over-head" id="game-over-text">Game Over</h1>
                 <p class="score">Score: <span id="game-over-score">0</span></p>
                 <button class="restart" id="restart-button">Main Menu</button>
             </div>
@@ -115,7 +115,7 @@
                     5. If you run out of health, you lose. <br/>
                     6. If you run out of hunger, you lose. <br/>
                     7. If you run out of time, you lose. <br/>
-                    8. If you reach 1000 points, you win. <br/>
+                    8. If you reach 500 points, you win. <br/>
 
                 </p>
 				
@@ -134,14 +134,7 @@
                    <p class="credits-text"> Grechen Fuemen by Robert Leuschke, Google Fonts.<br/> 
                     Architects Daughter by Kimberly Geswein, Google Fonts.<br/>
                     Shark fin by RoboLamp Art, Dribbble.<br/>
-                     Hungry Shark In Game Conceptual Work by Dan Francis.<br/>
-                    Fish movement by YUKA<br/>
-                    Fish collision detection by Cannon-es<br/>
-                    Texture image by Unsplash<br/>
-                    Shark Model by free3d<br/>
-                    Fish Model by Thobile Michelle Nkomo<br/>
-                    Pointer Lock Controls by Mugen87
-                </p>
+                    Hungry Shark In Game Conceptual Work by Dan Francis</p>
 
 				
 				<script type="module" src="basicSettings.js"></script>
@@ -155,11 +148,17 @@
                     // Show the game container
                     document.getElementById('game-container').style.display = 'block';
         
+                    // Remove the existing script element for 'main.js'
+                    const existingScript = document.querySelector('script[src="/main.js"]');
+                    if (existingScript) {
+                        existingScript.remove();
+                    }
+
                     // Load your Three.js game script dynamically
                     const script = document.createElement('script');
                     script.type = 'module';
                     script.src = '/main.js';
-                    document.body.appendChild(script);
+                    document.body.appendChild(script)
                 });
 
                 document.getElementById('settingsBtn').addEventListener('click', () => {

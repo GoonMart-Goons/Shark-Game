@@ -4,6 +4,8 @@ import { PointerLockControls } from '../modules/PointerLockControls';
 import * as YUKA from 'yuka'; // Import the YUKA library
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
+import { Water } from 'three/addons/objects/Water2.js';//water reflections
+
 
 import { setBarNumber, drawTime, initHUD } from './components/hud';
 import { addPlane, planeGrid } from './components/terrain';
@@ -15,7 +17,7 @@ import { addSkyBox } from './components/skybox';
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
 let camera, scene, renderer, controls
-let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
+let oceanFloor, player, skeleton, fish, world, playerHB, fishHB, skyBox
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
@@ -57,6 +59,21 @@ function init(){
     scene.background = new THREE.Color(0xaaccff)
     scene.fog = new THREE.Fog(0x99bbff, 0, 750)
 
+    // water
+    const waterGeometry = new THREE.PlaneGeometry(1000, 1000);
+    const water = new Water(waterGeometry, {
+        textureWidth: 512,
+        textureHeight: 512,
+        alpha: 1.0,
+        sunDirection: new THREE.Vector3(1, 1, 1),
+        waterColor: 0x001e0f,
+        flowDirection: new THREE.Vector2( 1,1 ),
+    });
+    water.position.y = 175;
+    water.rotation.x = Math.PI / 2;
+    scene.add(water);
+
+
     //Renderer init
     renderer = new THREE.WebGLRenderer()
     renderer.setSize(window.innerWidth / window.innerHeight)
@@ -85,11 +102,37 @@ function init(){
         controls.lock()
     })
 
+    const loader1 = new GLTFLoader();
+    loader1.load(' ./assets/shark.glb',function (glb){
+        const model = glb.scene;
+        const sharkClone = SkeletonUtils.clone(model);
+        player=sharkClone;
+        player.position.set(0,-0.4,-5.7);
+        player.scale.set(0.8,0.8,0.8);
+        player.rotateY(-Math.PI/2);
+        // Create a new material with the desired color and reflectivity properties
+        const material = new THREE.MeshStandardMaterial({
+            color: 0x555566,  // Set the color
+            roughness: 0.5,   // Adjust the roughness (0.0 to 1.0)
+            metalness: 0.3   // Adjust the metalness (0.0 to 1.0)
+        });
+
+        // Assign the new material to the model
+        sharkClone.traverse(function (child) {
+            if (child.isMesh) {
+                child.material = material;
+            }
+        });
+        //camera.add(sharkClone);
+        skeleton = new THREE.SkeletonHelper( sharkClone );
+        skeleton.visible = true;
+        scene.add( skeleton );
+    });
     //Make player object child of camera + add them to scene
-    player = addCube()
-    player.position.set(0, -1, -2)
+    //player = addCube()
+    //player.position.set(0, -1, -2)
     
-    const offset = controls.getObject().position.add(new THREE.Vector3(0, -1, -2))
+    const offset = controls.getObject().position.add(new THREE.Vector3(0,-1,-2))
     playerHB = addCubeHB(offset)
     //Collision detection with fish
     playerHB.addEventListener("collide", function(event){
@@ -112,16 +155,6 @@ function init(){
     scene.add(controls.getObject())
     world.addBody(playerHB)
 
-    //Add fish to random parts of the world
-
-    //Test fish
-    // fish = addCube()
-    // fish.position.set(3, 2, 5)
-    // fishHB = addCubeHB(fish.position)
-    // fish.material.color.set('green')
-    // scene.add(fish)
-    // world.addBody(fishHB)
-
     //Ocean floor
     oceanFloor = addPlane()
     oceanFloor.position.y = -250
@@ -132,12 +165,7 @@ function init(){
     skyBox = addSkyBox()
     scene.add(skyBox)
 
-    //For debugging
-    // debugRenderer = new THREE.CannonDebugRenderer(scene, world)
-
     window.addEventListener('resize', onWindowResize)
-
-
     addKeyListener()
 
     //HUD elements
@@ -146,10 +174,6 @@ function init(){
 
     //Add sounds to game
     addSounds(camera)
-    
-
-    //Init fish
-    // initFish(fishArray, numFish)
 
     //Init fish
     const loader = new GLTFLoader ();
@@ -190,6 +214,7 @@ function init(){
         }
 
     });
+
 }
 
 //Allows code to listen for keyboard input
@@ -250,8 +275,6 @@ document.addEventListener('keydown', onKeyDown)
 document.addEventListener('keyup', onKeyUp) 
 
 function handleFishEaten(eatenFishIndex) {
-    // Remove the eaten fish from the scene
-
     // Respawn the eaten fish in a random location
     const newX = Math.random() * 200 - 100;
     const newY = Math.random() * 200 - 100;
@@ -328,8 +351,8 @@ function animate() {
         controls.getObject().position.z = 450
     if(controls.getObject().position.z < -450)
         controls.getObject().position.z = -450
-    playerHB.position.copy(controls.getObject().position) //Player hit box
-
+    playerHB.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z) //Player hit box
+    //player.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z-4)//kudzai
     //Move fish
     const delta2 = time2.update().getDelta();
     for (let i = 0; i < numFish; i++) {
@@ -341,12 +364,6 @@ function animate() {
     }
 
     world.step(1 / 60)
-
-    // console.log("rotation =", player.rotation)
-    // console.log("position =", player.position)
-    // console.log("controls =", controls.getObject().position)
-    // console.log("player =", player.position)
-    
 
     // debugRenderer.update()
     renderer.render(scene, camera)

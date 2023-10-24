@@ -17,7 +17,7 @@ import { addSkyBox } from './components/skybox';
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
 let camera, scene, renderer, controls
-let oceanFloor, player, skeleton, fish, world, playerHB, fishHB, skyBox
+let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
@@ -43,7 +43,7 @@ let time2 = new YUKA.Time()
 function sync (entity, renderComponent) {
     renderComponent.matrix.copy(entity.worldMatrix);
 }
-
+let mixer
 //Initialize scene
 function init(){
     //CANNON world for physics
@@ -103,16 +103,25 @@ function init(){
     })
 
     const loader1 = new GLTFLoader();
-    loader1.load(' ./assets/shark.glb',function (glb){
-        const model = glb.scene;
+    loader1.load(' ./assets/megalodon/source/high_quality_shark_animation.glb',function (gltf){
+        const model = gltf.scene;
+        // Play the animation
+        mixer = new THREE.AnimationMixer(model);
+        console.log(mixer);
+        const clips = gltf.animations;
+        console.log(clips);
+        const clip = THREE.AnimationClip. findByName (clips, 'swimming');
+        const action = mixer.clipAction(clip);
+        action.play();
+        animate();
         const sharkClone = SkeletonUtils.clone(model);
         player=sharkClone;
         player.position.set(0,-0.4,-5.7);
-        player.scale.set(0.8,0.8,0.8);
-        player.rotateY(-Math.PI/2);
-        // Create a new material with the desired color and reflectivity properties
+        player.scale.set(0.4,0.4,0.4);
+        player.rotateY(Math.PI);
+        //Create a new material with the desired color and reflectivity properties
         const material = new THREE.MeshStandardMaterial({
-            color: 0x555566,  // Set the color
+            color: 0x555566,  // Set the color (red in this example)
             roughness: 0.5,   // Adjust the roughness (0.0 to 1.0)
             metalness: 0.3   // Adjust the metalness (0.0 to 1.0)
         });
@@ -123,10 +132,9 @@ function init(){
                 child.material = material;
             }
         });
-        //camera.add(sharkClone);
-        skeleton = new THREE.SkeletonHelper( sharkClone );
-        skeleton.visible = true;
-        scene.add( skeleton );
+        // Play the animation
+        camera.add(sharkClone);
+        //scene.add(sharkClone);
     });
     //Make player object child of camera + add them to scene
     //player = addCube()
@@ -177,11 +185,8 @@ function init(){
 
     //Init fish
     const loader = new GLTFLoader ();
-    let mixer;
     loader.load(' ./assets/fish.glb', function (glb){
         const model = glb.scene;
-        const clips = glb.animations;
-
         for (let i = 0; i < numFish; i++) {
             const fishClone = SkeletonUtils.clone(model);
             fishArray.push(fishClone);
@@ -306,6 +311,7 @@ function addCubeHB(objPosision){
 }
 
 //Animation functions
+const clock = new THREE.Clock()
 function animate() {
     requestAnimationFrame(animate)
 
@@ -362,8 +368,17 @@ function animate() {
         fishArray[i].quaternion.copy(vehicleArray[i].rotation);
         fishHBArray[i].position.copy(fishArray[i].position)
     }
+    //shark animation
+    const delta3 = clock.getDelta();
+    if(mixer){
+        console.log('Updating mixer');
+        mixer.update( delta3 );
+        console.log(mixer);
+
+    }
 
     world.step(1 / 60)
+
 
     // debugRenderer.update()
     renderer.render(scene, camera)

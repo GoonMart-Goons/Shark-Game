@@ -275,7 +275,7 @@ body {
     position: relative;
     text-decoration: none;
     color: rgb(255, 255, 255);
-    background-color: rgba(1, 127, 245, 0.829);;
+    background-color: rgba(1, 127, 245, 0.829);
     border: yellow solid 2px;
     border-radius: 25px;
     padding: 12px 10px;
@@ -304,4 +304,62 @@ body {
     color: rgb(0, 0, 0);
     z-index: 2;
   }
+
+  /* PAUSE MENU */
+  .pause-btn{
+    background-color: rgb(35, 37, 133);
+    color: rgb(255, 255, 255);
+    background-color: rgba(1, 25, 245, 0.829);
+    border: yellow solid 2px;
+    /* color: rgb(230, 206, 206); */
+    font-size: 15px;
+    padding: 11px 14px 7px 14px;
+    /* border: rgb(6, 15, 99) solid 2px; */
+    cursor: pointer;
+    border-radius: 35px;
+    text-align: center;
+    text-decoration: none;
+    font-family: 'Architects Daughter', cursive;
+}
+
+.pause{
+  display: block;
+  position: absolute;
+  right: 30px;
+  top: 15px;
+}
+
+.pause-menu{
+  position: absolute;
+  font-size: 40px;
+  color: black;
+  margin: 20px;
+  left: 39%;
+  top:180px;
+  text-align: center;
+  justify-content: center;
+  font-family: 'Architects Daughter', cursive;
+  font-weight: bold;
+  border-radius: 50px;
+  background-color: rgba(213, 226, 33, 0.9);
+  padding: 20px 60px;
+  border: rgb(6, 15, 99) solid 2px;
+}
+
+#menu-resume, #menu-restart, #menu-home, #menu-settings{
+  background-color: rgb(35, 37, 133);
+  color: rgb(230, 206, 206);
+  font-size: 15px;
+  padding: 8px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 35px;
+  text-align: center;
+  text-decoration: none;
+  font-family: 'Architects Daughter', cursive;
+}
+
+#menu-settings{
+  margin-bottom: 12px;
+}
 

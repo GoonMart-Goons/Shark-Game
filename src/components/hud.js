@@ -190,18 +190,18 @@ export function initHUD(){
 
     canvasHealth.style.position = "absolute";
     canvasHealth.style.top = "10px";
-    canvasHealth.style.left = "200px";
+    canvasHealth.style.left = "50px";
 
     canvasHunger.style.position = "absolute";
     canvasHunger.style.top = "60px";
-    canvasHunger.style.left = "200px";
+    canvasHunger.style.left = "50px";
     
     canvasScore.style.position = "absolute";
     canvasScore.style.top = "10px";
-    canvasScore.style.left = "10px";
+    canvasScore.style.right = "10px";
 
     canvasTime.style.position = "absolute";
-    canvasTime.style.top = "10px";
+    canvasTime.style.top = "50px";
     canvasTime.style.right = "20px";
 
     drawScore(0)

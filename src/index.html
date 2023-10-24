@@ -36,6 +36,18 @@
                     <canvas id="time" width="200" height="30"></canvas>
                 </div>
                 <canvas id="hungerBar" width="250%" height="30"></canvas>
+                <div class = "pause">
+                    <button id="pauseBtn" class="pause-btn">| |</button><br/> 
+                </div>
+            </div>
+            <!-- display pause menu -->
+            <div id="pause-container" style="display: none;">
+                <div class = "pause-menu">
+                    <button id="menu-resume" class="pause-btn">RESUME</button><br/>
+                    <button id="menu-restart" class="pause-btn">RESTART</button><br/> 
+                    <button id="menu-home" class="pause-btn">HOME</button><br/> 
+                    <button id="menu-settings" class="pause-btn">SETTINGS</button><br/> 
+                </div>
             </div>
 
             <!-- display settings -->
@@ -159,6 +171,36 @@
                     script.type = 'module';
                     script.src = '/main.js';
                     document.body.appendChild(script)
+                });
+
+                document.getElementById('pauseBtn').addEventListener('click', () => {
+                    // Show pause menu
+                    document.getElementById('pause-container').style.display = 'block';
+                });
+
+                document.getElementById('menu-resume').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('game-container').style.display = 'block';
+                    //Hide the pause menu
+                    document.getElementById('pause-container').style.display = 'none';
+                });
+
+                document.getElementById('menu-home').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('game-container').style.display = 'none';
+                    //Hide the pause menu
+                    document.getElementById('pause-container').style.display = 'none';
+                    // Show home page
+                    document.getElementById('app').style.display = 'block';
+                });
+
+                document.getElementById('menu-settings').addEventListener('click', () => {
+                    // Hide the home page
+                    document.getElementById('game-container').style.display = 'none';
+                    //Hide the pause menu
+                    document.getElementById('pause-container').style.display = 'none';
+                    // Show settings
+                    document.getElementById('settings').style.display = 'block';
                 });
 
                 document.getElementById('settingsBtn').addEventListener('click', () => {

@@ -106,14 +106,7 @@ function init(){
     loader1.load(' ./assets/megalodon/source/high_quality_shark_animation.glb',function (gltf){
         const model = gltf.scene;
         // Play the animation
-        mixer = new THREE.AnimationMixer(model);
-        console.log(mixer);
-        const clips = gltf.animations;
-        console.log(clips);
-        const clip = THREE.AnimationClip. findByName (clips, 'swimming');
-        const action = mixer.clipAction(clip);
-        action.play();
-        animate();
+
         const sharkClone = SkeletonUtils.clone(model);
         player=sharkClone;
         player.position.set(0,-0.4,-5.7);
@@ -132,8 +125,17 @@ function init(){
                 child.material = material;
             }
         });
+        mixer = new THREE.AnimationMixer(sharkClone);
+        console.log(mixer);
+        const clips = gltf.animations;
+        console.log(clips);
+        const clip = THREE.AnimationClip. findByName (clips, 'swimming');
+        const action = mixer.clipAction(clip);
+        action.play();
         // Play the animation
         camera.add(sharkClone);
+        animate();
+
         //scene.add(sharkClone);
     });
     //Make player object child of camera + add them to scene
@@ -290,6 +292,7 @@ function handleFishEaten(eatenFishIndex) {
 
     // Reset the fish's rotation
     vehicleArray[eatenFishIndex].rotation.set(0, 0, 0);
+
 }
 
 function addCube(){
@@ -371,10 +374,7 @@ function animate() {
     //shark animation
     const delta3 = clock.getDelta();
     if(mixer){
-        console.log('Updating mixer');
         mixer.update( delta3 );
-        console.log(mixer);
-
     }
 
     world.step(1 / 60)

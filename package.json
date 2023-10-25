@@ -11,6 +11,7 @@
   "license": "ISC",
   "dependencies": {
     "cannon-es": "^0.20.0",
+    "cannon-es-debugger": "^1.0.0",
     "dat": "^14.0.3",
     "dat.gui": "^0.7.9",
     "gltf": "^1.0.3",

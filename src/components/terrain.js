@@ -15,11 +15,11 @@ const alpha = loader.load('../assets/images/noisemap.png');
 //Make a plane [ground]
 export function addPlane(){
     const groundGeo = new THREE.PlaneGeometry(planeX, planeY, 100, 100);
-    const material = new THREE.MeshStandardMaterial({
+    const material = new THREE.MeshLambertMaterial({
         color: 0x948260, //'brown',
         map: texture,
         displacementMap: height,
-        displacementScale: 50,
+        displacementScale: 30,
         alphaMap: alpha,
         transparent: true,
         opacity: 3

@@ -1,5 +1,7 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
+import  CannonDebugger  from 'cannon-es-debugger';
+
 import { PointerLockControls } from '../modules/PointerLockControls';
 import * as YUKA from 'yuka'; // Import the YUKA library
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
@@ -14,10 +16,12 @@ import { updateScore} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds } from './components/sound';
 import { addSkyBox } from './components/skybox';
 
+import {addCoralGroup1} from './components/coral';
+
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
 let camera, scene, renderer, controls
-let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
+let oceanFloor, player, fish, world, playerHB, fishHB, skyBox, cannonDebugger
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 
 let fishArray = []; // An array to store fish objects
@@ -48,6 +52,7 @@ let mixer
 function init(){
     //CANNON world for physics
     world = new CANNON.World()
+    //world.gravity.set(0, -9.81, 0)
 
     //Camera init & settings
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000)
@@ -73,6 +78,9 @@ function init(){
     water.rotation.x = Math.PI / 2;
     scene.add(water);
 
+    //Canon debugger
+    //cannonDebugger =  new CannonDebugger(scene, world);
+    
 
     //Renderer init
     renderer = new THREE.WebGLRenderer()
@@ -167,9 +175,27 @@ function init(){
 
     //Ocean floor
     oceanFloor = addPlane()
-    oceanFloor.position.y = -250
-    oceanFloor.rotation.set(162, 0, 0)
+    //oceanFloor.position.y = -250
+    //oceanFloor.rotation.set(162, 0, 0)
+    oceanFloor.rotateX(-Math.PI/2)
+    oceanFloor.position.y = -230
     scene.add(oceanFloor)
+
+    //Add coral 
+    for (let i = 0; i < 7; i++) {
+            // Generate random X and Y positions within the scene dimensions
+            const randomX = Math.floor(Math.random() * 900) - 450;
+            const randomZ = Math.floor(Math.random() * 900) - 450;
+            const randomScale = 1 + Math.random() * 2;
+
+        
+            // Create a coral and set its position
+            const coral = addCoralGroup1(4, 9);
+            coral.position.set(randomX, -210, randomZ);
+            coral.scale.set(randomScale, randomScale, randomScale)
+            scene.add(coral);
+    }
+
 
     //Skybox
     skyBox = addSkyBox()
@@ -353,7 +379,7 @@ function animate() {
 
     if(controls.getObject().position.y > 175)
         controls.getObject().position.y = 175
-    if(controls.getObject().position.y < -175)
+    if(controls.getObject().position.y < -175) //-175
         controls.getObject().position.y = -175
 
     if(controls.getObject().position.z > 450)
@@ -378,7 +404,6 @@ function animate() {
     }
 
     world.step(1 / 60)
-
 
     // debugRenderer.update()
     renderer.render(scene, camera)

@@ -301,6 +301,12 @@ const onKeyUp = function(event) {
         case 'KeyD':
             movementArr[3] = false
             break
+        case 'Digit1':
+            player.visible = false
+            break
+        case 'Digit3':
+            player.visible = true
+            break
     }
 }
 

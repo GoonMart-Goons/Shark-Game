@@ -21,8 +21,9 @@ import {addCoralGroup1} from './components/coral';
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
 let camera, scene, renderer, controls
-let oceanFloor, player, fish, world, playerHB, fishHB, skyBox, cannonDebugger
+let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
+let isRunning = true
 
 let fishArray = []; // An array to store fish objects
 let fishHBArray = []
@@ -36,11 +37,8 @@ const vertex = new THREE.Vector3();
 const col = new THREE.Color();
 
 //assists with animations
-let entityManager = new YUKA.EntityManager();
-let time2 = new YUKA.Time()
-
-
-// ================================================================================================
+let entityManager
+let time2
 
 // F U N C T I O N S ==============================================================================
 //assists with animations
@@ -50,13 +48,13 @@ function sync (entity, renderComponent) {
 let mixer
 //Initialize scene
 function init(){
+    isRunning = true
+
     //CANNON world for physics
     world = new CANNON.World()
-    //world.gravity.set(0, -9.81, 0)
 
     //Camera init & settings
     camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 1, 2000)
-    // camera.position.y = 10
     const gameContainer = document.getElementById('game-container');
 
     //Scene init
@@ -76,16 +74,11 @@ function init(){
     });
     water.position.y = 175;
     water.rotation.x = Math.PI / 2;
-    scene.add(water);
-
-    //Canon debugger
-    //cannonDebugger =  new CannonDebugger(scene, world);
-    
+    scene.add(water);    
 
     //Renderer init
     renderer = new THREE.WebGLRenderer()
     renderer.setSize(window.innerWidth / window.innerHeight)
-    //document.body.appendChild(renderer.domElement)
     gameContainer.appendChild(renderer.domElement)
 
     //Light source
@@ -134,9 +127,7 @@ function init(){
             }
         });
         mixer = new THREE.AnimationMixer(sharkClone);
-        console.log(mixer);
         const clips = gltf.animations;
-        console.log(clips);
         const clip = THREE.AnimationClip. findByName (clips, 'swimming');
         const action = mixer.clipAction(clip);
         action.play();
@@ -146,10 +137,8 @@ function init(){
 
         //scene.add(sharkClone);
     });
-    //Make player object child of camera + add them to scene
-    //player = addCube()
-    //player.position.set(0, -1, -2)
     
+    //Make player object child of camera + add them to scene    
     const offset = controls.getObject().position.add(new THREE.Vector3(0,-1,-2))
     playerHB = addCubeHB(offset)
     //Collision detection with fish
@@ -167,16 +156,13 @@ function init(){
             handleFishEaten(fishIdx)
             // fishArray[fishIdx].material.color.set('red')
         }
-    }) 
-
+    })
     controls.getObject().add(player)
     scene.add(controls.getObject())
     world.addBody(playerHB)
 
     //Ocean floor
     oceanFloor = addPlane()
-    //oceanFloor.position.y = -250
-    //oceanFloor.rotation.set(162, 0, 0)
     oceanFloor.rotateX(-Math.PI/2)
     oceanFloor.position.y = -230
     scene.add(oceanFloor)
@@ -196,22 +182,21 @@ function init(){
             scene.add(coral);
     }
 
-
     //Skybox
     skyBox = addSkyBox()
     scene.add(skyBox)
-
-    window.addEventListener('resize', onWindowResize)
-    addKeyListener()
-
+    
     //HUD elements
     initHUD()
     onWindowResize()
+    addKeyListener()
 
     //Add sounds to game
     addSounds(camera)
 
     //Init fish
+    entityManager = new YUKA.EntityManager();
+    time2 = new YUKA.Time()
     const loader = new GLTFLoader ();
     loader.load(' ./assets/fish.glb', function (glb){
         const model = glb.scene;
@@ -236,18 +221,15 @@ function init(){
             wanderBehavior.weight = 0.7; // Increase the weight to make the behavior more prominent
             vehicleArray[i].steering.add(wanderBehavior);
 
-
             entityManager.add(vehicleArray[i]) ;
             //vehicleArray[i].rotation.fromEuler(0, 2 * Math.PI * Math.random(),0);
             vehicleArray[i].fishRotation = new YUKA.Quaternion();
-            vehicleArray[i].position.x=Math.random() * 1000 - 500;
-            vehicleArray[i].position.y=Math.random() * 1000 - 500;
-            vehicleArray[i].position.z=Math.random() * 200 - 150;
-
+            vehicleArray[i].position.x=Math.random() * 500 - 250;
+            vehicleArray[i].position.y=Math.random() * 250 - 125;
+            vehicleArray[i].position.z=Math.random() * 500 - 250;
         }
 
     });
-
 }
 
 //Allows code to listen for keyboard input
@@ -310,29 +292,17 @@ const onKeyUp = function(event) {
     }
 }
 
-document.addEventListener('keydown', onKeyDown)
-document.addEventListener('keyup', onKeyUp) 
-
 function handleFishEaten(eatenFishIndex) {
     // Respawn the eaten fish in a random location
-    const newX = Math.random() * 200 - 100;
-    const newY = Math.random() * 200 - 100;
-    const newZ = Math.random() * 200 - 100;
+    const newX = Math.random() * 500 - 250
+    const newY = Math.random() * 250 - 125
+    const newZ = Math.random() * 500 - 250
 
-    // Update the fish's position
     vehicleArray[eatenFishIndex].position.set(newX, newY, newZ);
-
-    // Reset the fish's rotation
-    vehicleArray[eatenFishIndex].rotation.set(0, 0, 0);
-
-}
-
-function addCube(){
-    const geom = new THREE.BoxGeometry(1, 1, 1)
-    const mat = new THREE.MeshBasicMaterial({color: 0x7788ff})
-    const cube = new THREE.Mesh(geom, mat)
-
-    return cube
+    fishArray[eatenFishIndex].position.copy(vehicleArray[eatenFishIndex].position)
+    fishArray[eatenFishIndex].quaternion.copy(vehicleArray[eatenFishIndex].rotation)
+    fishHBArray[eatenFishIndex].position.copy(fishArray[eatenFishIndex].position)
+    console.log('Ate fish', eatenFishIndex)
 }
 
 function addCubeHB(objPosision){
@@ -349,70 +319,71 @@ function addCubeHB(objPosision){
 const clock = new THREE.Clock()
 function animate() {
     requestAnimationFrame(animate)
+    if(isRunning){
 
-    //HUD element updates
-    setBarNumber()
-    drawTime()
+        //HUD element updates
+        setBarNumber()
+        drawTime()
 
-    //Camera movement 
-    const time = performance.now()
-    if (controls.isLocked === true) {
+        //Camera movement 
+        const time = performance.now()
+        if (controls.isLocked === true) {
 
-        const delta = (time - prevTime) / 1000
+            const delta = (time - prevTime) / 1000
 
-        velocity.x -= velocity.x * 10.0 * delta
-        velocity.z -= velocity.z * 10.0 * delta
-        velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
+            velocity.x -= velocity.x * 10.0 * delta
+            velocity.z -= velocity.z * 10.0 * delta
+            velocity.y -= 9.8 * 100.0 * delta // 100.0 = mass
 
-        direction.z = Number( movementArr[0] ) - Number( movementArr[1] )
-        direction.x = Number( movementArr[3] ) - Number( movementArr[2] )
-        direction.normalize() // this ensures consistent movements in all directions
+            direction.z = Number( movementArr[0] ) - Number( movementArr[1] )
+            direction.x = Number( movementArr[3] ) - Number( movementArr[2] )
+            direction.normalize() // this ensures consistent movements in all directions
 
-        if (movementArr[0] || movementArr[1]) 
-            velocity.z -= direction.z * 400.0 * delta
-        if (movementArr[2] || movementArr[3])
-            velocity.x -= direction.x * 400.0 * delta
+            if (movementArr[0] || movementArr[1]) 
+                velocity.z -= direction.z * 400.0 * delta
+            if (movementArr[2] || movementArr[3])
+                velocity.x -= direction.x * 400.0 * delta
 
-        controls.moveRight(-velocity.x * delta)
-        controls.moveForward(-velocity.z * delta)
+            controls.moveRight(-velocity.x * delta)
+            controls.moveForward(-velocity.z * delta)
+        }
+        prevTime = time
+
+        if(controls.getObject().position.x > 450)
+            controls.getObject().position.x = 450
+        if(controls.getObject().position.x < -450)
+            controls.getObject().position.x = -450
+
+        if(controls.getObject().position.y > 175)
+            controls.getObject().position.y = 175
+        if(controls.getObject().position.y < -175) //-175
+            controls.getObject().position.y = -175
+
+        if(controls.getObject().position.z > 450)
+            controls.getObject().position.z = 450
+        if(controls.getObject().position.z < -450)
+            controls.getObject().position.z = -450
+        playerHB.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z) //Player hit box
+        //player.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z-4)//kudzai
+        //Move fish
+        const delta2 = time2.update().getDelta();
+        for (let i = 0; i < numFish; i++) {
+            vehicleArray[i].update(delta2); // Update the YUKA vehicle
+            fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
+            // Update the fish's rotation to match the YUKA vehicle's orientation
+            fishArray[i].quaternion.copy(vehicleArray[i].rotation);
+            fishHBArray[i].position.copy(fishArray[i].position)
+        }
+        //shark animation
+        const delta3 = clock.getDelta();
+        if(mixer){
+            mixer.update( delta3 );
+        }
+
+        world.step(1 / 60)
+
+        renderer.render(scene, camera)
     }
-    prevTime = time
-
-    if(controls.getObject().position.x > 450)
-        controls.getObject().position.x = 450
-    if(controls.getObject().position.x < -450)
-        controls.getObject().position.x = -450
-
-    if(controls.getObject().position.y > 175)
-        controls.getObject().position.y = 175
-    if(controls.getObject().position.y < -175) //-175
-        controls.getObject().position.y = -175
-
-    if(controls.getObject().position.z > 450)
-        controls.getObject().position.z = 450
-    if(controls.getObject().position.z < -450)
-        controls.getObject().position.z = -450
-    playerHB.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z) //Player hit box
-    //player.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z-4)//kudzai
-    //Move fish
-    const delta2 = time2.update().getDelta();
-    for (let i = 0; i < numFish; i++) {
-        vehicleArray[i].update(delta2); // Update the YUKA vehicle
-        fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
-        // Update the fish's rotation to match the YUKA vehicle's orientation
-        fishArray[i].quaternion.copy(vehicleArray[i].rotation);
-        fishHBArray[i].position.copy(fishArray[i].position)
-    }
-    //shark animation
-    const delta3 = clock.getDelta();
-    if(mixer){
-        mixer.update( delta3 );
-    }
-
-    world.step(1 / 60)
-
-    // debugRenderer.update()
-    renderer.render(scene, camera)
 }
 
 function onWindowResize(){
@@ -421,14 +392,63 @@ function onWindowResize(){
     renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
-window.addEventListener('resize', onWindowResize)
+function endGame(){
+    console.log('Game has ended')
+    isRunning = false
+    camera = null
+    scene = null
+    renderer = null
+    player = null
+    playerHB = null
+    fishArray = null
+    fishHBArray = null
+    vehicleArray = null
+    
+    //remove event listeners
+    window.removeEventListener('resize', onWindowResize)
+    document.removeEventListener('keydown', onKeyDown)
+    document.removeEventListener('keyup', onKeyUp) 
+    controls.removeEventListener('lock', () => {})
+    controls.removeEventListener('unlock', () => {})
+    renderer.domElement.removeEventListener('click', () => {
+    })
+    
+    controls = null
+}
 
-// ================================================================================================
+// E V E N T   L I S T E N E R S ==================================================================
+window.addEventListener('resize', onWindowResize)
+document.addEventListener('keydown', onKeyDown)
+document.addEventListener('keyup', onKeyUp) 
+
+//When "Start" button pressed, run init()
+const startGameBtn = document.getElementById('startButton')
+startGameBtn.addEventListener('click', function(event){
+    console.log('Start game button pressed')
+    isRunning = true
+    controls.getObject().position.set(0, 0, 0)
+    controls.getObject().roatation.set(0, 0, 0)
+    player.visible = true
+    initHUD()
+})
+
+const pauseBtn = document.getElementById('pauseBtn')
+pauseBtn.addEventListener('click', function(event){
+    isRunning = false
+    console.log('Is running:', isRunning)
+})
+const resumeBtn = document.getElementById('menu-resume')
+resumeBtn.addEventListener('click', function(event){
+    isRunning = true
+    console.log('Is running:', isRunning)
+})
+
+// G A M E   E V E N T S ==========================================================================
+
+// document.addEventListener('endGameEvent', endGame)
 
 // M A I N ========================================================================================
 
 //Call functions
 init()
 animate()
-
-// ================================================================================================

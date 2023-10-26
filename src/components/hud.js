@@ -1,3 +1,5 @@
+import { endGameTrigger } from "./gameEvents";
+
 //HUD
 var playerHealth = 100; // Player's actual health
 var maxHealth = 100; // Maximum health
@@ -6,6 +8,7 @@ var playerHunger = 100; // Player's actual hunger level
 var maxHunger = 100; 
 
 var score = 0;
+var scoreToWin = 100;
 
 const canvasHealth = document.getElementById("healthBar");
 const contextHealth = canvasHealth.getContext("2d");
@@ -24,7 +27,7 @@ var endTime;
 
 var gameIsActive = true
 
-const hungerDecay = 0.05  //0.05
+const hungerDecay = 0.01  //0.05
 const healthDecay = 0.025 //0.025
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
@@ -116,7 +119,7 @@ export function setBarNumber(){
             showGameOverScreen('Game Over, Ran out of time')
             return
         }
-        if(score >= 200){
+        if(score >= scoreToWin){
             showGameOverScreen('You Win!')
             return
         }
@@ -139,6 +142,8 @@ function showGameOverScreen(text){
     gameOverScore.textContent = score; // Set the final score
     //Show game over
     gameOverScreen.style.display = 'block'
+
+    endGameTrigger() //Event trigger to end game
 }
 
 // Add an event listener for the main menu button

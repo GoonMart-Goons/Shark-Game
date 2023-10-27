@@ -1,7 +1,7 @@
 import * as THREE from 'three'
 
 const loader = new THREE.TextureLoader()
-const mineTexture = loader.load('../assests/images/metal.jpg');
+const mineTexture = loader.load('../assets/images/metal.jpg');
 console.log('Mine texture:', mineTexture)
 
 export function addNavalMine(radius, spikeLength, spikeRadius) {

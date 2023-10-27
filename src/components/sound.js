@@ -8,6 +8,7 @@ const listener = new THREE.AudioListener();
 const music = new THREE.Audio(listener);
 const underwaterEffect = new THREE.Audio(listener);
 const bite = new THREE.Audio(listener);
+const explosion = new THREE.Audio(listener);
 
 //loads sound into audio loader
 export function addSounds(camera){
@@ -28,6 +29,11 @@ export function addSounds(camera){
         bite.setLoop(false);
         bite.setVolume(1);
     });
+    audioLoader.load('../sounds/hq-explosion-6288.mp3', function(buffer){
+        explosion.setBuffer(buffer);
+        explosion.setLoop(false);
+        explosion.setVolume(1);
+});
 }
 
 //sound on for the settings
@@ -73,6 +79,15 @@ export function playBite(){
     var soundOn = localStorage.getItem("fxOn")
     if(soundOn==="true"){
         bite.play();
+    }
+}
+
+export function playExplosion(){
+    populateNullLocalStorage()
+    // console.log("Bite happening")
+    var soundOn = localStorage.getItem("fxOn")
+    if(soundOn==="true"){
+        explosion.play();
     }
 }
 

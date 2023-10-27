@@ -8,16 +8,14 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { Water } from 'three/addons/objects/Water2.js';//water reflections
 
-import { setBarNumber, drawTime, initHUD } from './components/hud';
+import { setBarNumber, drawTime, initHUD, incPlayerHealth } from './components/hud';
 import { addPlane } from './components/terrain';
 import { updateScore} from './components/gameLogic';
-import { playBackgroundMusic, playBite, addSounds } from './components/sound';
+import { playBackgroundMusic, playBite, addSounds, playExplosion } from './components/sound';
 import { addSkyBox } from './components/skybox';
 import { initLevel } from './components/levelManager';
 import { addNavalMine } from './components/mine';
-
 import {addCoralGroup1} from './components/coral';
-import { randFloat } from 'three/src/math/MathUtils';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -105,12 +103,10 @@ function init(){
     controls.addEventListener('lock', () => {
         console.log('Pointer is now locked.')
     })
-
     // Add an event listener for when the pointer is unlocked
     controls.addEventListener('unlock', () => {
         console.log('Pointer is now unlocked.')
     })
-
     // Lock the pointer when the user clicks on the renderer
     renderer.domElement.addEventListener('click', () => {
         controls.lock()
@@ -156,18 +152,20 @@ function init(){
     playerHB = addCubeHB(offset)
     //Collision detection with fish
     playerHB.addEventListener("collide", function(event){
-        if(event.body === fishHB){
-            updateScore('bigFish')
-            playBite()
-            fish.material.color.set('red')
-        }
-
         if(fishHBArray.includes(event.body)){
             const fishIdx = fishHBArray.indexOf(event.body)
             updateScore('smallFish')
             playBite()
             handleFishEaten(fishIdx)
             // fishArray[fishIdx].material.color.set('red')
+        }
+
+        if(mineHBArray.includes(event.body)){
+            const mineIdx = mineHBArray.indexOf(event.body)
+            playExplosion()
+            mineArray[mineIdx].visible = false
+            mineHBArray[mineIdx] = null
+            incPlayerHealth(-30)
         }
     })
     controls.getObject().add(player)
@@ -250,9 +248,9 @@ function init(){
     mineHBArray = []
     for(var i = 0; i < numMines; i++){
         const navalMine = addNavalMine(5, 2, 0.6);
-        navalMine.position.x = Math.random() * 500 - 250
+        navalMine.position.x = Math.random() * 1000 - 500
         navalMine.position.y = Math.random() * 250 - 125
-        navalMine.position.z = Math.random() * 500 - 250
+        navalMine.position.z = Math.random() * 1000 - 500
         mineArray.push(navalMine)
         scene.add(mineArray[i]);
         mineHBArray.push(addCubeHB(mineArray[i].position))
@@ -266,7 +264,7 @@ function addKeyListener(){
     window.addEventListener('keyup', onKeyUp)
 
     //MISO's code
-    window.addEventListener('g', playBite)
+    window.addEventListener('g', playExplosion)
 }
 
 //Handles player movement on key events

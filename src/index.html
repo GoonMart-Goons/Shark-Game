@@ -23,7 +23,7 @@
                        <button id="howToBtn">How to Play</button><br/>
                        <button id="settingsBtn" class="home-heads2">Settings</button><br/>
                        <button id="creditsBtn" class="home-heads2">Credits</button><br/>	
-                       <button id="careerBtn" class="home-heads2">Career</button><br/>
+                       <!-- <button id="careerBtn" class="home-heads2">Career</button><br/> -->
                        
                     </div>
             </div>
@@ -122,7 +122,7 @@
                 <p class="howto-text">
                     1. Press the 'START GAME' button on the main menu. <br/>
                     2. Use the arrow keys to move the shark around the screen. <br/>
-                    3. Eat the fish to gain points and increase your health. <br/>
+                    3. Eat the fish to gain points and increase your hunger bar. <br/>
                     4. Avoid the mines and the jellyfish. <br/>
                     5. If you run out of health, you lose. <br/>
                     6. If you run out of hunger, you lose. <br/>
@@ -216,12 +216,12 @@
                     document.getElementById('settings').style.display = 'block';
                 });
 
-                document.getElementById('careerBtn').addEventListener('click', () => {
-                    // Hide the home page
-                    document.getElementById('app').style.display = 'none';
-                    // Show settings
-                    document.getElementById('career').style.display = 'block';
-                });
+                // document.getElementById('careerBtn').addEventListener('click', () => {
+                //     // Hide the home page
+                //     document.getElementById('app').style.display = 'none';
+                //     // Show settings
+                //     document.getElementById('career').style.display = 'block';
+                // });
 
                 document.getElementById('howToBtn').addEventListener('click', () => {
                     // Hide the home page

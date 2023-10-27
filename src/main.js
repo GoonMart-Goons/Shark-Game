@@ -85,7 +85,7 @@ function init(){
         waterColor: 0x001e0f,
         flowDirection: new THREE.Vector2( 1,1 ),
     });
-    water.position.y = 175;
+    water.position.y = 200;
     water.rotation.x = Math.PI / 2;
     scene.add(water);    
 
@@ -230,7 +230,7 @@ function init(){
             vehicleArray.push(new YUKA.Vehicle());
             vehicleArray[i].setRenderComponent(fishArray[i], sync) ;
 
-            vehicleArray[i].maxSpeed = 5; // Change 5 to your desired speed
+            vehicleArray[i].maxSpeed = 10; // Change 5 to your desired speed
 
             const wanderBehavior = new YUKA.WanderBehavior();
             wanderBehavior.weight = 0.7; // Increase the weight to make the behavior more prominent

@@ -32,7 +32,7 @@ export function addSounds(camera){
     audioLoader.load('../sounds/hq-explosion-6288.mp3', function(buffer){
         explosion.setBuffer(buffer);
         explosion.setLoop(false);
-        explosion.setVolume(1);
+        explosion.setVolume(0.4);
 });
 }
 

@@ -8,14 +8,16 @@ import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { Water } from 'three/addons/objects/Water2.js';//water reflections
 
-import { setBarNumber, drawTime, initHUD, incPlayerHealth } from './components/hud';
+import { setBarNumber, drawTime, initHUD, incPlayerHealth, updateCountdown } from './components/hud';
 import { addPlane } from './components/terrain';
-import { updateScore} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds, playExplosion } from './components/sound';
 import { addSkyBox } from './components/skybox';
-import { initLevel } from './components/levelManager';
 import { addNavalMine } from './components/mine';
 import {addCoralGroup1} from './components/coral';
+
+import { updateScore} from './components/gameLogic';
+import { initLevel } from './components/levelManager';
+import { pauseGameTrigger, resumeGameTrigger } from './components/gameEvents';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -310,10 +312,14 @@ const onKeyUp = function(event) {
             movementArr[3] = false
             break
         case 'Digit1':
-            player.visible = false
+            player.visible = true
+            player.position.set(0, -2.5, -0.5)
+            // controls.getObject().position.set(controls.getObject().position + new THREE.Vector3(0, 0, -4))
             break
         case 'Digit3':
             player.visible = true
+            player.position.set(0, -0.4, -5.7)
+            // controls.getObject().position.set(controls.getObject().position + new THREE.Vector3(0, 0, 4))
             break
     }
 }
@@ -344,8 +350,11 @@ function addCubeHB(objPosision){
 const clock = new THREE.Clock()
 function animate() {
     requestAnimationFrame(animate)
+    const delta2 = time2.update().getDelta();
+    const delta3 = clock.getDelta();
+    
     if(isRunning){
-
+        requestAnimationFrame(updateCountdown)
         //HUD element updates
         setBarNumber()
         drawTime()
@@ -390,8 +399,9 @@ function animate() {
             controls.getObject().position.z = -450
         playerHB.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z) //Player hit box
         //player.position.set(controls.getObject().position.x,controls.getObject().position.y,controls.getObject().position.z-4)//kudzai
+        
         //Move fish
-        const delta2 = time2.update().getDelta();
+        
         for (let i = 0; i < numFish; i++) {
             vehicleArray[i].update(delta2); // Update the YUKA vehicle
             fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
@@ -400,7 +410,7 @@ function animate() {
             fishHBArray[i].position.copy(fishArray[i].position)
         }
         //shark animation
-        const delta3 = clock.getDelta();
+        
         if(mixer){
             mixer.update( delta3 );
         }
@@ -417,30 +427,6 @@ function onWindowResize(){
     renderer.setSize(window.innerWidth, window.innerHeight)
 }
 
-function endGame(){
-    console.log('Game has ended')
-    isRunning = false
-    camera = null
-    scene = null
-    renderer = null
-    player = null
-    playerHB = null
-    fishArray = null
-    fishHBArray = null
-    vehicleArray = null
-    
-    //remove event listeners
-    window.removeEventListener('resize', onWindowResize)
-    document.removeEventListener('keydown', onKeyDown)
-    document.removeEventListener('keyup', onKeyUp) 
-    controls.removeEventListener('lock', () => {})
-    controls.removeEventListener('unlock', () => {})
-    renderer.domElement.removeEventListener('click', () => {
-    })
-    
-    controls = null
-}
-
 // E V E N T   L I S T E N E R S ==================================================================
 window.addEventListener('resize', onWindowResize)
 document.addEventListener('keydown', onKeyDown)
@@ -452,20 +438,38 @@ startGameBtn.addEventListener('click', function(event){
     console.log('Start game button pressed')
     isRunning = true
     controls.getObject().position.set(0, 0, 0)
-    controls.getObject().roatation.set(0, 0, 0)
-    player.visible = true
+    console.log(controls.getObject())
+    controls.getObject().rotation.y = 0
+    controls.getObject().rotation.z = 0
+    controls.getObject().rotation.x = 0
+    player.position.set(0, -0.4, -5.7)
+    initLevel(level)
     initHUD()
 })
 
 const pauseBtn = document.getElementById('pauseBtn')
 pauseBtn.addEventListener('click', function(event){
+    pauseGameTrigger()
     isRunning = false
     console.log('Is running:', isRunning)
 })
 const resumeBtn = document.getElementById('menu-resume')
 resumeBtn.addEventListener('click', function(event){
+    resumeGameTrigger()
     isRunning = true
     console.log('Is running:', isRunning)
+})
+
+const restartGameBtn = document.getElementById('menu-restart')
+restartGameBtn.addEventListener('click', function(event){
+    isRunning = true
+    controls.getObject().position.set(0, 0, 0)
+    controls.getObject().rotation.y = 0
+    controls.getObject().rotation.z = 0
+    controls.getObject().rotation.x = 0
+    player.position.set(0, -0.4, -5.7)
+    initHUD()
+    console.log('Restart game button pressed')
 })
 
 // G A M E   E V E N T S ==========================================================================
@@ -477,3 +481,4 @@ resumeBtn.addEventListener('click', function(event){
 //Call functions
 init()
 animate()
+// timerInterval = setInterval(updateCountdown, 1000)

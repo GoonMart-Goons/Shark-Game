@@ -1,4 +1,4 @@
-import { endGameTrigger } from "./gameEvents";
+import { endGameTrigger, pauseGameEvent, resumeGameEvent } from "./gameEvents";
 
 //HUD
 var playerHealth = 100; // Player's actual health
@@ -24,8 +24,11 @@ const contextHunger = canvasHunger.getContext("2d");
 
 var maxGameTime = 5 //minutes
 var endTime;
+var displayTime
+var lastTimeStamp = null
 
 var gameIsActive = true
+var pausedTime = 0
 
 var hungerDecay = 0.01  //0.05
 var healthDecay = 0.025 //0.025
@@ -64,14 +67,15 @@ export function incPlayerHealth(health){
 }
 
 export function incPlayerHunger(hunger){
-    if(playerHealth + hunger > maxHealth){
-        playerHealth = maxHealth
-        playerHunger += hunger
-    } 
-    else if(playerHealth < maxHealth)
-        incPlayerHealth(hunger)
-    else
-        playerHunger += hunger
+    // if(playerHealth + hunger > maxHealth){
+    //     playerHealth = maxHealth
+    //     playerHunger += hunger
+    // } 
+    // else if(playerHealth < maxHealth)
+    //     incPlayerHealth(hunger)
+    // else
+    //     playerHunger += hunger
+    playerHunger += hunger
 
     if(playerHunger > maxHunger)
         playerHunger = 100
@@ -100,13 +104,15 @@ export function drawScore(){
 export function drawTime(){
     contextTime.clearRect(0, 0, canvasTime.width, canvasTime.height);
     setTextStyle(contextTime);
-    const stringTime = updateCountdown();
-    contextTime.strokeText(stringTime, 10, 20);
-    contextTime.fillText(stringTime, 10, 20);
+    if(gameIsActive){
+        // const stringTime = updateCountdown();
+        contextTime.strokeText(displayTime, 10, 20);
+        contextTime.fillText(displayTime, 10, 20);
+    }
 }
 
 export function setBarNumber(){
-    if(true){
+    if(gameIsActive){
         if(playerHunger > 0){
             playerHunger = Math.max(0, playerHunger - hungerDecay);
         }
@@ -114,15 +120,29 @@ export function setBarNumber(){
             playerHealth = Math.max(0, playerHealth - healthDecay);
         }
         //console.log(playerHunger);
-        drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, "green");
-        drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, "orange"); 
+        const currTime = new Date();
+        const isEvenSecond = currTime.getSeconds() % 2 === 0;
+    
+        let healthColor = "green";
+        let hungerColor = "purple";
+    
+        if (playerHealth <= 20) {
+            healthColor = isEvenSecond ? "red" : "green";
+        }
+    
+        if (playerHunger <= 20) {
+            hungerColor = isEvenSecond ? "red" : "purple";
+        }
+    
+        drawVariableBar(contextHealth, canvasHealth, playerHealth, maxHealth, healthColor);
+        drawVariableBar(contextHunger, canvasHunger, playerHunger, maxHunger, hungerColor);
         
         if(playerHealth <= 0){
             showGameOverScreen('Game Over, Ran out of health')
             return
         }
         const currentTime = new Date().getTime();
-        if(endTime - currentTime <= 0){
+        if(endTime <= 0){
             showGameOverScreen('Game Over, Ran out of time')
             return
         }
@@ -173,23 +193,55 @@ document.getElementById('restart-button').addEventListener('click', () => {
     // You may need to perform any additional cleanup or logic to return to the main menu state
 });
 
+// export const timerInterval = setInterval(updateCountdown, 1000)
 
-export function updateCountdown() {
-    if(gameIsActive){
-        const currentTime = new Date().getTime();
-        const timeRemaining = endTime - currentTime;
-    
-        if (timeRemaining <= 0) {
-          clearInterval(interval);
-          return 'Countdown expired!';
-          //document.getElementById('time').innerHTML = 'Countdown expired!';
-        } else {
-          const minutes = Math.floor((timeRemaining / 1000) / 60);
-          const seconds = Math.floor((timeRemaining / 1000) % 60);
-          `Time remaining: ${minutes} minutes ${seconds} seconds`
-          return `Time: 0${minutes}: ${seconds}`;
-        }
+export function updateCountdown(timeStamp) {
+    if(!gameIsActive){
+        lastTimeStamp = timeStamp
+        requestAnimationFrame(updateCountdown)
+        return
     }
+
+    if(!lastTimeStamp)
+        lastTimeStamp = timeStamp
+
+    const delta = (timeStamp - lastTimeStamp)
+
+    const mins = Math.floor(endTime / 3600)
+    const secs = Math.floor(endTime / 60 % 60)
+    const formattedSecs = secs < 10 ? `0${secs}` : secs
+
+        // Check if the timer has reached zero
+    if (endTime <= 0) {
+        clearInterval(timerInterval); // Stop the timer
+        console.log("Time's up!");
+    } else {
+        endTime -= 0.5; // Decrement the time remaining
+    }
+
+    displayTime = `Time: ${mins}: ${formattedSecs}`
+
+    // console.log('Game is ranning:', gameIsActive)
+    // if(!gameIsActive)
+    //     pausedTime = new Date().getTime()
+    // if(gameIsActive){
+    //     const currentTime = new Date().getTime();
+    //     const timeRemaining = endTime - currentTime + pausedTime;
+    
+    //     if (timeRemaining <= 0) {
+    //       clearInterval(interval);
+    //       return 'Countdown expired!';
+    //       //document.getElementById('time').innerHTML = 'Countdown expired!';
+    //     } else {
+    //       const minutes = Math.floor((timeRemaining / 1000) / 60);
+    //       const seconds = Math.floor((timeRemaining / 1000) % 60);
+
+    //       // Use string formatting to ensure seconds has two digits
+    //       const formattedSeconds = seconds < 10 ? `0${seconds}` : seconds;
+    //       `Time remaining: ${minutes} minutes ${formattedSeconds} seconds`
+    //       return `Time: 0${minutes}: ${formattedSeconds}`;
+    //     }
+    // }
 }
 
 export function initHUD(){
@@ -197,7 +249,8 @@ export function initHUD(){
 
     playerHealth = maxHealth
     playerHunger = maxHunger
-    endTime = new Date().getTime() + maxGameTime * 60 * 1000;
+    // endTime = maxGameTime * 60 * 1000;
+    endTime = 300 * 60
     score = 0
 
     canvasHealth.style.position = "absolute";
@@ -217,4 +270,16 @@ export function initHUD(){
     canvasTime.style.right = "20px";
 
     drawScore(0)
+    setBarNumber()
 }
+
+//Adds event listeners for the game
+document.addEventListener('pauseGameEvent', function(event){
+    console.log('Pause event called')
+    gameIsActive = false
+})
+document.addEventListener('resumeGameEvent', function(event){
+    console.log('Resume event called')
+    gameIsActive = true
+    lastTimeStamp = null
+})

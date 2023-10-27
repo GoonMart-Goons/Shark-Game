@@ -21,10 +21,10 @@
                        <h1 class="home-head1" id="home-h1">SHARK ATTACK</h1>
                        <button id="startButton">START GAME</button><br/>	
                        <button id="howToBtn">How to Play</button><br/>
-                       <button id="careerBtn" class="home-heads2">Career</button><br/>
                        <button id="settingsBtn" class="home-heads2">Settings</button><br/>
                        <button id="creditsBtn" class="home-heads2">Credits</button><br/>	
-                        
+                       <button id="careerBtn" class="home-heads2">Career</button><br/>
+                       
                     </div>
             </div>
             
@@ -127,7 +127,8 @@
                     5. If you run out of health, you lose. <br/>
                     6. If you run out of hunger, you lose. <br/>
                     7. If you run out of time, you lose. <br/>
-                    8. If you reach 500 points, you win. <br/>
+                    8. Press the 1 key to switch to 1st person <br/>
+                    9. Press the 3 key to switch to 3rd person <br/>
 
                 </p>
 				
@@ -181,6 +182,11 @@
                 document.getElementById('menu-resume').addEventListener('click', () => {
                     // Hide the home page
                     document.getElementById('game-container').style.display = 'block';
+                    //Hide the pause menu
+                    document.getElementById('pause-container').style.display = 'none';
+                });
+
+                document.getElementById('menu-restart').addEventListener('click', () => {
                     //Hide the pause menu
                     document.getElementById('pause-container').style.display = 'none';
                 });

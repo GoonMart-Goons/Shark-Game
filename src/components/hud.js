@@ -22,13 +22,20 @@ const contextTime = canvasTime.getContext("2d");
 const canvasHunger = document.getElementById("hungerBar");
 const contextHunger = canvasHunger.getContext("2d");
 
-const maxGameTime = 5 //minutes
+var maxGameTime = 5 //minutes
 var endTime;
 
 var gameIsActive = true
 
-const hungerDecay = 0.01  //0.05
-const healthDecay = 0.025 //0.025
+var hungerDecay = 0.01  //0.05
+var healthDecay = 0.025 //0.025
+
+export function levelSettings(pointsToWin, totalTime, hunger, health){
+    scoreToWin = pointsToWin
+    maxGameTime = totalTime
+    hungerDecay = hunger
+    healthDecay = health
+}
 
 export function drawVariableBar(context, canvas, health, maxHealth, colour) {
     context.clearRect(0, 0, canvas.width, canvas.height);

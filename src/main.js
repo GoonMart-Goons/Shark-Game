@@ -2,21 +2,22 @@ import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import  CannonDebugger  from 'cannon-es-debugger';
 
-import { PointerLockControls } from '../modules/PointerLockControls';
+import { PointerLockControls } from '/modules/PointerLockControls';
 import * as YUKA from 'yuka'; // Import the YUKA library
 import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
 import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
 import { Water } from 'three/addons/objects/Water2.js';//water reflections
 
-
 import { setBarNumber, drawTime, initHUD } from './components/hud';
-import { addPlane, planeGrid } from './components/terrain';
-import { initFish, animateFish } from './components/fish';
+import { addPlane } from './components/terrain';
 import { updateScore} from './components/gameLogic';
 import { playBackgroundMusic, playBite, addSounds } from './components/sound';
 import { addSkyBox } from './components/skybox';
+import { initLevel } from './components/levelManager';
+import { addNavalMine } from './components/mine';
 
 import {addCoralGroup1} from './components/coral';
+import { randFloat } from 'three/src/math/MathUtils';
 
 //G L O B A L   V A R I A B L E S =================================================================
 //Camera and scene setup
@@ -25,16 +26,16 @@ let oceanFloor, player, fish, world, playerHB, fishHB, skyBox
 let movementArr = [false, false, false, false] //Up, Down, Left, Right
 let isRunning = true
 
-let fishArray = []; // An array to store fish objects
-let fishHBArray = []
+let fishArray = [], mineArray = []; // An array to store fish objects
+let fishHBArray = [], mineHBArray = []
 let vehicleArray = []// vehicle array
-const numFish = 20; // Number of fish in the environment
+var numFish, numMines // Number of fish in the environment
+
+let level = 2 //level to load
 
 let prevTime = performance.now();
 const velocity = new THREE.Vector3();
 const direction = new THREE.Vector3();
-const vertex = new THREE.Vector3();
-const col = new THREE.Color();
 
 //assists with animations
 let entityManager
@@ -46,8 +47,20 @@ function sync (entity, renderComponent) {
     renderComponent.matrix.copy(entity.worldMatrix);
 }
 let mixer
+
+//Get fish and mine numbers
+export function setGameSettings(fishNum, mineNum){
+    numFish = fishNum
+    numMines = mineNum
+}
+
 //Initialize scene
 function init(){
+    initLevel(level)
+    console.log('Level:', level)
+    console.log('Num Fish:', numFish)
+    console.log('Num Mines:', numMines)
+    
     isRunning = true
 
     //CANNON world for physics
@@ -195,6 +208,8 @@ function init(){
     addSounds(camera)
 
     //Init fish
+    fishArray = []
+    fishHBArray = []
     entityManager = new YUKA.EntityManager();
     time2 = new YUKA.Time()
     const loader = new GLTFLoader ();
@@ -230,6 +245,19 @@ function init(){
         }
 
     });
+
+    mineArray = []
+    mineHBArray = []
+    for(var i = 0; i < numMines; i++){
+        const navalMine = addNavalMine(5, 2, 0.6);
+        navalMine.position.x = Math.random() * 500 - 250
+        navalMine.position.y = Math.random() * 250 - 125
+        navalMine.position.z = Math.random() * 500 - 250
+        mineArray.push(navalMine)
+        scene.add(mineArray[i]);
+        mineHBArray.push(addCubeHB(mineArray[i].position))
+        world.addBody(mineHBArray[i])
+    }
 }
 
 //Allows code to listen for keyboard input
@@ -308,10 +336,9 @@ function handleFishEaten(eatenFishIndex) {
 function addCubeHB(objPosision){
     const cubeHB = new CANNON.Body({
         mass: 1,
-        shape: new CANNON.Box(new CANNON.Vec3(0.5, 0.5, 0.5)),
+        shape: new CANNON.Box(new CANNON.Vec3(1, 1, 1)),
     })
     cubeHB.position.copy(objPosision)
-
     return cubeHB
 }
 

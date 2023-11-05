@@ -1,11 +1,11 @@
-import * as THREE from 'three';
-import * as CANNON from 'cannon-es';
-import  CannonDebugger  from 'cannon-es-debugger';
+import * as THREE from '../node_modules/three';
+import * as CANNON from '../node_modules/cannon-es';
 
 import { PointerLockControls } from '/modules/PointerLockControls';
-import * as YUKA from 'yuka'; // Import the YUKA library
-import {GLTFLoader} from 'three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
-import * as SkeletonUtils from 'three/examples/jsm/utils/SkeletonUtils';
+import * as YUKA from '../node_modules/yuka'; // Import the YUKA library
+import {GLTFLoader} from '../node_modules/three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
+import * as SkeletonUtils from '../node_modules/three/examples/jsm/utils/SkeletonUtils';
+// import { Water } from '/three/examples/jsm/objects/Water2.js;' //water reflections
 import { Water } from 'three/addons/objects/Water2.js';//water reflections
 
 import { setBarNumber, drawTime, initHUD, incPlayerHealth, updateCountdown } from './components/hud';

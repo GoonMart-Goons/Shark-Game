@@ -170,8 +170,16 @@
                     // Load your Three.js game script dynamically
                     const script = document.createElement('script');
                     script.type = 'module';
-                    script.src = '/main.js';
-                    document.body.appendChild(script)
+                    script.src = './main.js';
+                    script.onload = () => {
+                    // Handle script load success (if needed)
+                    console.log('main.js script loaded successfully');
+                    };
+                    script.onerror = (error) => {
+                    // Handle script load error (if needed)
+                    console.error('Error loading main.js:', error);
+                    };
+                    document.body.appendChild(script);
                 });
 
                 document.getElementById('pauseBtn').addEventListener('click', () => {

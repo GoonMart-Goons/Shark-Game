@@ -5,8 +5,6 @@ import { PointerLockControls } from '/modules/PointerLockControls';
 import * as YUKA from '/node_modules/yuka'; // Import the YUKA library
 import {GLTFLoader} from '/node_modules/three/examples/jsm/loaders/GLTFLoader';//fish 3d model helper
 import * as SkeletonUtils from '/node_modules/three/examples/jsm/utils/SkeletonUtils';
-// import { Water } from '/three/examples/jsm/objects/Water2.js;' //water reflections
-// import { Water } from 'three/addons/objects/Water2.js';//water reflections
 
 import { setBarNumber, drawTime, initHUD, incPlayerHealth, updateCountdown } from './components/hud';
 import { addPlane } from './components/terrain';
@@ -73,21 +71,7 @@ function init(){
     //Scene init
     scene = new THREE.Scene()
     scene.background = new THREE.Color(0xaaccff)
-    scene.fog = new THREE.Fog(0x99bbff, 0, 750)
-
-    // water
-    // const waterGeometry = new THREE.PlaneGeometry(1000, 1000);
-    // const water = new Water(waterGeometry, {
-    //     textureWidth: 512,
-    //     textureHeight: 512,
-    //     alpha: 1.0,
-    //     sunDirection: new THREE.Vector3(1, 1, 1),
-    //     waterColor: 0x001e0f,
-    //     flowDirection: new THREE.Vector2( 1,1 ),
-    // });
-    // water.position.y = 200;
-    // water.rotation.x = Math.PI / 2;
-    // scene.add(water);    
+    scene.fog = new THREE.Fog(0x99bbff, 0, 750);    
 
     //Renderer init
     renderer = new THREE.WebGLRenderer()

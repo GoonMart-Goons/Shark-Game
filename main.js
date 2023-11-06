@@ -387,11 +387,13 @@ function animate() {
         //Move fish
         
         for (let i = 0; i < numFish; i++) {
-            vehicleArray[i].update(delta2); // Update the YUKA vehicle
-            fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
-            // Update the fish's rotation to match the YUKA vehicle's orientation
-            fishArray[i].quaternion.copy(vehicleArray[i].rotation);
-            fishHBArray[i].position.copy(fishArray[i].position)
+            if(vehicleArray[i]){
+                vehicleArray[i].update(delta2); // Update the YUKA vehicle
+                fishArray[i].position.copy(vehicleArray[i].position); // Update the fish's position
+                // Update the fish's rotation to match the YUKA vehicle's orientation
+                fishArray[i].quaternion.copy(vehicleArray[i].rotation);
+                fishHBArray[i].position.copy(fishArray[i].position)
+            }
         }
         //shark animation
         
